@@ -407,7 +407,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         score++
         label_score.text = "\(score)"
-        removeCoin(secondBody.node as SKSpriteNode)
+        removeCoin(secondBody.node as! SKSpriteNode)
         println("GOT COIN")
 //        var alertSound = NSURL(fileURLWithPath: NSBundle.mainBundle().pathForResource("collectcoin", ofType: "wav")!)
 //        AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayback, error: nil)
@@ -424,7 +424,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         score+=10
         label_score.text = "\(score)"
-        removeCoin(secondBody.node as SKSpriteNode)
+        removeCoin(secondBody.node as! SKSpriteNode)
         println("GOT MEGA COIN")
 //        var alertSound = NSURL(fileURLWithPath: NSBundle.mainBundle().pathForResource("collectcoin", ofType: "wav")!)
 //        AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayback, error: nil)
@@ -440,7 +440,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         score+=25
         label_score.text = "\(score)"
-        removeCoin(secondBody.node as SKSpriteNode)
+        removeCoin(secondBody.node as! SKSpriteNode)
         println("GOT MEGA COIN")
         //        var alertSound = NSURL(fileURLWithPath: NSBundle.mainBundle().pathForResource("collectcoin", ofType: "wav")!)
         //        AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayback, error: nil)
@@ -462,7 +462,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
   // MARK: - Touch Events
-  override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
+  override func touchesBegan(touches: Set<NSObject>, withEvent event: UIEvent) {
     
     // 1
     if state == .FSGameStateStarting {
