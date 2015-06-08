@@ -26,7 +26,6 @@
 		E9AC1D4F1B25164500F2468B /* man2@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = E9AC1D4B1B25164500F2468B /* man2@2x.png */; };
 		E9AC1D501B25164500F2468B /* man3@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = E9AC1D4C1B25164500F2468B /* man3@2x.png */; };
 		E9AC1D511B25164500F2468B /* man4@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = E9AC1D4D1B25164500F2468B /* man4@2x.png */; };
-		E9C0D3061B24D6310029E939 /* collectcoin.wav in Resources */ = {isa = PBXBuildFile; fileRef = E9C0D3051B24D6310029E939 /* collectcoin.wav */; };
 		E9C0D30B1B25110E0029E939 /* man1.png in Resources */ = {isa = PBXBuildFile; fileRef = E9C0D3071B25110E0029E939 /* man1.png */; };
 		E9C0D30C1B25110E0029E939 /* man2.png in Resources */ = {isa = PBXBuildFile; fileRef = E9C0D3081B25110E0029E939 /* man2.png */; };
 		E9C0D30D1B25110E0029E939 /* man3.png in Resources */ = {isa = PBXBuildFile; fileRef = E9C0D3091B25110E0029E939 /* man3.png */; };
@@ -67,7 +66,6 @@
 		E9AC1D4B1B25164500F2468B /* man2@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "man2@2x.png"; sourceTree = "<group>"; };
 		E9AC1D4C1B25164500F2468B /* man3@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "man3@2x.png"; path = "Flappy Swift/images/man3@2x.png"; sourceTree = SOURCE_ROOT; };
 		E9AC1D4D1B25164500F2468B /* man4@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "man4@2x.png"; sourceTree = "<group>"; };
-		E9C0D3051B24D6310029E939 /* collectcoin.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = collectcoin.wav; path = "../../All SOUNDS/Prank Sounds/collectcoin.wav"; sourceTree = "<group>"; };
 		E9C0D3071B25110E0029E939 /* man1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = man1.png; path = ../../../../Dropbox/Assets/CoinFrenzy/man1.png; sourceTree = "<group>"; };
 		E9C0D3081B25110E0029E939 /* man2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = man2.png; path = ../../../../Dropbox/Assets/CoinFrenzy/man2.png; sourceTree = "<group>"; };
 		E9C0D3091B25110E0029E939 /* man3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = man3.png; path = ../../../../Dropbox/Assets/CoinFrenzy/man3.png; sourceTree = "<group>"; };
@@ -114,7 +112,6 @@
 			isa = PBXGroup;
 			children = (
 				4EC69CFE197278E30094A23E /* images */,
-				E9C0D3051B24D6310029E939 /* collectcoin.wav */,
 				4EC69CDD19726D340094A23E /* AppDelegate.swift */,
 				4EC69CE119726D340094A23E /* GameScene.swift */,
 				4EC69CE319726D340094A23E /* GameViewController.swift */,
@@ -259,7 +256,6 @@
 				E9C0D30C1B25110E0029E939 /* man2.png in Resources */,
 				E9AC1D4E1B25164500F2468B /* man1@2x.png in Resources */,
 				4EC69D08197278E30094A23E /* bg.png in Resources */,
-				E9C0D3061B24D6310029E939 /* collectcoin.wav in Resources */,
 				E9C0D30B1B25110E0029E939 /* man1.png in Resources */,
 				4EC69D0B197278E30094A23E /* bird1@2x.png in Resources */,
 				4EC69D0E197278E30094A23E /* bottom.png in Resources */,

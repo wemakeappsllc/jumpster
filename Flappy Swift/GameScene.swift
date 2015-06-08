@@ -94,6 +94,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     let FSCoinCategory: UInt32     = 1 << 4
     let FSMegaCoinCategory: UInt32 = 1 << 5
     let FSUltraCoinCategory: UInt32 = 1 << 6
+    let FSImpossibleCoinCategory: UInt32 = 1 << 7
     
     // 1
     enum FSGameState: Int {
@@ -118,6 +119,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     createCoin()
     createMegaCoin()
     createUltraCoin()
+    createImpossibleCoin()
     
     runAction(SKAction.repeatActionForever(
         SKAction.sequence([
@@ -137,6 +139,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         SKAction.sequence([
             SKAction.runBlock(createUltraCoin),
             SKAction.waitForDuration(6.0)
+            ])
+        ))
+    runAction(SKAction.repeatActionForever(
+        SKAction.sequence([
+            SKAction.runBlock(createImpossibleCoin),
+            SKAction.waitForDuration(10.0)
             ])
         ))
     
@@ -453,6 +461,23 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
     }
     
+    if collision == (FSPlayerCategory | FSImpossibleCoinCategory) {
+        
+        score+=45
+        label_score.text = "\(score)"
+        removeCoin(secondBody.node as! SKSpriteNode)
+        println("GOT MEGA COIN")
+        //        var alertSound = NSURL(fileURLWithPath: NSBundle.mainBundle().pathForResource("collectcoin", ofType: "wav")!)
+        //        AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayback, error: nil)
+        //        AVAudioSession.sharedInstance().setActive(true, error: nil)
+        //
+        //        var error:NSError?
+        //        audioPlayer = AVAudioPlayer(contentsOfURL: alertSound, error: &error)
+        //        audioPlayer.prepareToPlay()
+        //        audioPlayer.play()
+        
+    }
+    
   }
     
     func removeCoin (coin:SKSpriteNode) {
@@ -623,6 +648,47 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         // Create the actions
         let actionMove = SKAction.moveTo(CGPoint(x: -self.size.width, y: 402), duration: NSTimeInterval(actualDuration))
+        let actionMoveDone = SKAction.removeFromParent()
+        let loseAction = SKAction.runBlock() {
+            let reveal = SKTransition.flipHorizontalWithDuration(0.5)
+            //            let gameOverScene = GameOverScene(size: self.size, won: false)
+            //            self.view?.presentScene(gameOverScene, transition: nil)
+        }
+        coin.runAction(SKAction.sequence([actionMove, loseAction, actionMoveDone]))
+        
+        
+    }
+
+    func createImpossibleCoin() {
+        
+        let coin = SKSpriteNode(imageNamed: "bird1")
+        
+        coin.physicsBody = SKPhysicsBody(circleOfRadius: coin.size.width / 2.5)
+        coin.physicsBody?.dynamic = true
+        coin.physicsBody?.categoryBitMask = FSImpossibleCoinCategory
+        coin.physicsBody?.contactTestBitMask = FSPlayerCategory
+        coin.physicsBody?.collisionBitMask = FSPlayerCategory
+        coin.physicsBody?.affectedByGravity = false
+        coin.zPosition = 100
+        
+        // Determine where to spawn the monster along the Y axis
+        let actualY = random(min:coin.size.height/2, max: size.height - coin.size.height/2)
+        let actualX = random(min:coin.size.width/2, max: size.width - coin.size.width/2)
+        
+        // Position the monster slightly off-screen along the right edge,
+        // and along a random position along the Y axis as calculated above
+        coin.position = CGPoint(x: size.width + coin.size.width/2, y: 502)
+        coin.zRotation = CGFloat(M_PI_2)
+        coin.size = CGSize(width: 10, height: 10)
+        
+        // Add the monster to the scene
+        addChild(coin)
+        
+        // Determine speed of the monster
+        let actualDuration = random(min:CGFloat(8.0), max: CGFloat(14.0))
+        
+        // Create the actions
+        let actionMove = SKAction.moveTo(CGPoint(x: -self.size.width, y: 502), duration: NSTimeInterval(actualDuration))
         let actionMoveDone = SKAction.removeFromParent()
         let loseAction = SKAction.runBlock() {
             let reveal = SKTransition.flipHorizontalWithDuration(0.5)
