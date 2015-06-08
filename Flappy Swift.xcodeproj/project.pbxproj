@@ -63,10 +63,10 @@
 		4EC69D05197278E30094A23E /* bottom.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bottom.png; sourceTree = "<group>"; };
 		4EC69D06197278E30094A23E /* pipe.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = pipe.png; sourceTree = "<group>"; };
 		4EC69D07197278E30094A23E /* TapToStart.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = TapToStart.png; sourceTree = "<group>"; };
-		E9AC1D4A1B25164500F2468B /* man1@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "man1@2x.png"; path = "../../../../Dropbox/Assets/CoinFrenzy/man1@2x.png"; sourceTree = "<group>"; };
-		E9AC1D4B1B25164500F2468B /* man2@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "man2@2x.png"; path = "../../../../Dropbox/Assets/CoinFrenzy/man2@2x.png"; sourceTree = "<group>"; };
-		E9AC1D4C1B25164500F2468B /* man3@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "man3@2x.png"; path = "../../../../Dropbox/Assets/CoinFrenzy/man3@2x.png"; sourceTree = "<group>"; };
-		E9AC1D4D1B25164500F2468B /* man4@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "man4@2x.png"; path = "../../../../Dropbox/Assets/CoinFrenzy/man4@2x.png"; sourceTree = "<group>"; };
+		E9AC1D4A1B25164500F2468B /* man1@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "man1@2x.png"; sourceTree = "<group>"; };
+		E9AC1D4B1B25164500F2468B /* man2@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "man2@2x.png"; sourceTree = "<group>"; };
+		E9AC1D4C1B25164500F2468B /* man3@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "man3@2x.png"; path = "Flappy Swift/images/man3@2x.png"; sourceTree = SOURCE_ROOT; };
+		E9AC1D4D1B25164500F2468B /* man4@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "man4@2x.png"; sourceTree = "<group>"; };
 		E9C0D3051B24D6310029E939 /* collectcoin.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = collectcoin.wav; path = "../../All SOUNDS/Prank Sounds/collectcoin.wav"; sourceTree = "<group>"; };
 		E9C0D3071B25110E0029E939 /* man1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = man1.png; path = ../../../../Dropbox/Assets/CoinFrenzy/man1.png; sourceTree = "<group>"; };
 		E9C0D3081B25110E0029E939 /* man2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = man2.png; path = ../../../../Dropbox/Assets/CoinFrenzy/man2.png; sourceTree = "<group>"; };
