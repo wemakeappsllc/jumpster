@@ -29,8 +29,21 @@
 
 import SpriteKit
 import AVFoundation
+import iAd
 
 // Math Helpers
+
+extension SKAction {
+    static func oscillation(amplitude a: CGFloat, timePeriod t: CGFloat, midPoint: CGPoint) -> SKAction {
+        let action = SKAction.customActionWithDuration(Double(t)) { node, currentTime in
+            let displacement = a * sin(2 * 3.14 * currentTime / t)
+            node.position.y = midPoint.y + displacement
+        }
+        
+        return action
+    }
+}
+
 extension Float {
   static func clamp(min: CGFloat, max: CGFloat, value: CGFloat) -> CGFloat {
     if (value > max) {
@@ -53,8 +66,27 @@ extension CGFloat {
     }
 }
 
-class GameScene: SKScene, SKPhysicsContactDelegate {
+class GameScene: SKScene, SKPhysicsContactDelegate, ADBannerViewDelegate {
     
+    
+    //SOUNDS
+    
+    var playSoundEffect: SKAction!
+    var playHighScoreEffect: SKAction!
+    var playBackgroundMusic: SKAction!
+    
+    // Ad Banner
+    var adBannerView : ADBannerView?
+    
+    // Option Button
+    
+    var optionButton: SKSpriteNode!
+    var optionView: UIView!
+    
+    
+    // Baby
+    
+    var baby: SKSpriteNode!
     // Bird
     var bird: SKSpriteNode!
     var inAir = "false"
@@ -70,8 +102,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     // Score
     var score = 0
     var highscore = 0
+    var totalscore = 0
     var label_score: SKLabelNode!
     var high_score : SKLabelNode!
+    var total_score : SKLabelNode!
+    
+    //HUD
+    var birdHudNode : SKSpriteNode!
+
     
     // Instructions
     var instructions: SKSpriteNode!
@@ -85,6 +123,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     // Floor height
     let floor_distance: CGFloat = 72.0
+    var floorNode: SKSpriteNode!
     
     // Physics Categories
     let FSBoundaryCategory: UInt32 = 1 << 0
@@ -95,6 +134,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     let FSMegaCoinCategory: UInt32 = 1 << 5
     let FSUltraCoinCategory: UInt32 = 1 << 6
     let FSImpossibleCoinCategory: UInt32 = 1 << 7
+    let FSFloorCategory: UInt32 = 1 << 8
     
     // 1
     enum FSGameState: Int {
@@ -108,18 +148,40 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
   // MARK: - SKScene Initializacion
   override func didMoveToView(view: SKView) {
+    
+    NSNotificationCenter.defaultCenter().addObserver(
+        self,
+        selector: "becameActive:",
+        name: UIApplicationDidBecomeActiveNotification,
+        object: nil)
+    
+    playSoundEffect = SKAction.playSoundFileNamed("SFX_Powerup_49.wav", waitForCompletion: false)
+    playHighScoreEffect = SKAction.playSoundFileNamed("SFX_Powerup_34.wav", waitForCompletion: true)
+    playBackgroundMusic = SKAction.playSoundFileNamed("bossfight.mp3", waitForCompletion: true)
+    
+    state = .FSGameStatePlaying
+    
     initWorld()
     
     initBackground()
     
     initBird()
+
     
     initHUD()
     
-    createCoin()
-    createMegaCoin()
-    createUltraCoin()
-    createImpossibleCoin()
+//    createCoin()
+//    createMegaCoin()
+//    createUltraCoin()
+//    createImpossibleCoin()
+    
+    initFloor()
+    
+    initOptionButton()
+    initOptionMenu()
+    
+    loadAds()
+    
     
     runAction(SKAction.repeatActionForever(
         SKAction.sequence([
@@ -148,6 +210,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             ])
         ))
     
+    runAction(SKAction.repeatActionForever(playBackgroundMusic))
+    
+    
+//    var alertSound = NSURL(fileURLWithPath: NSBundle.mainBundle().pathForResource("collectcoin", ofType: "wav")!)
+//    AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayback, error: nil)
+//    AVAudioSession.sharedInstance().setActive(true, error: nil)
+//    
+//    var error:NSError?
+//    audioPlayer = AVAudioPlayer(contentsOfURL: alertSound, error: &error)
+//    audioPlayer.stop()
+//    audioPlayer.prepareToPlay()
+    
 //    runAction(SKAction.repeatActionForever(SKAction.sequence([SKAction.waitForDuration(2.0), SKAction.runBlock { self.initPipes()}])))
     
   }
@@ -164,6 +238,93 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
   }
     
+    func initFloor() {
+        
+        floorNode = SKSpriteNode(color: UIColor.redColor(), size: CGSize(width: self.view!.frame.width, height: 72))
+        floorNode.position = CGPoint(x: self.view!.frame.width/2, y: 74)
+        floorNode.physicsBody = SKPhysicsBody(rectangleOfSize: CGSize(width: self.view!.frame.width, height: 72))
+        floorNode.physicsBody?.categoryBitMask = FSFloorCategory
+        floorNode.physicsBody?.contactTestBitMask = FSPlayerCategory
+        floorNode.physicsBody?.collisionBitMask = FSFloorCategory
+        // 1
+        floorNode.physicsBody?.affectedByGravity = false
+        floorNode.physicsBody?.restitution = 0
+//        floorNode.physicsBody?.allowsRotation = false
+//        bird.physicsBody?.restitution = 0.0
+        floorNode.zPosition = 0
+        floorNode.size = CGSize(width: size.width, height: 1)
+        
+        addChild(floorNode)
+        
+    }
+    
+    func becameActive(notification : NSNotification){
+        
+        println("BECAME ACTIVE")
+
+//            if self.bird.position.y != CGFloat(72.0) {
+//                println("GOTCHA AIR")
+//                inAir = "true"
+//            }
+        
+        
+        
+    }
+    
+    func initGreenGuy() {
+        
+        bird = SKSpriteNode(imageNamed: "bird1")
+        bird.position = CGPoint(x: self.size.width/2, y: 72)
+        bird.physicsBody = SKPhysicsBody(circleOfRadius: bird.size.width / 2.5)
+        bird.physicsBody?.categoryBitMask = FSPlayerCategory
+        bird.physicsBody?.contactTestBitMask = FSPipeCategory | FSGapCategory | FSBoundaryCategory
+        bird.physicsBody?.collisionBitMask = FSPipeCategory | FSBoundaryCategory
+        // 1
+        bird.physicsBody?.affectedByGravity = true
+        bird.physicsBody?.allowsRotation = false
+        bird.physicsBody?.restitution = 0.0
+        bird.zPosition = 50
+        bird.size = CGSize(width: 44*0.9, height: 44*0.9)
+        addChild(bird)
+        
+        let texture1 = SKTexture(imageNamed: "greenguy1")
+        let texture2 = SKTexture(imageNamed: "greenguy2")
+        let texture3 = SKTexture(imageNamed: "greenguy3")
+        let texture4 = SKTexture(imageNamed: "greenguy4")
+        let textures = [texture1, texture2, texture3, texture4]
+        
+        bird.runAction(SKAction.repeatActionForever(SKAction.animateWithTextures(textures, timePerFrame: 0.2)))
+        
+        
+    }
+    
+    func initBaby() {
+        
+        bird = SKSpriteNode(imageNamed: "bird1")
+        bird.position = CGPoint(x: self.size.width/2, y: 72)
+        bird.physicsBody = SKPhysicsBody(circleOfRadius: bird.size.width / 2.5)
+        bird.physicsBody?.categoryBitMask = FSPlayerCategory
+        bird.physicsBody?.contactTestBitMask = FSPipeCategory | FSGapCategory | FSBoundaryCategory
+        bird.physicsBody?.collisionBitMask = FSPipeCategory | FSBoundaryCategory
+        // 1
+        bird.physicsBody?.affectedByGravity = true
+        bird.physicsBody?.allowsRotation = false
+        bird.physicsBody?.restitution = 0.0
+        bird.zPosition = 50
+        bird.size = CGSize(width: 44*0.9, height: 44*0.9)
+        addChild(bird)
+        
+        let texture1 = SKTexture(imageNamed: "baby1")
+        let texture2 = SKTexture(imageNamed: "baby2")
+        let texture3 = SKTexture(imageNamed: "baby3")
+        let texture4 = SKTexture(imageNamed: "baby4")
+        let textures = [texture1, texture2, texture3, texture4]
+        
+        bird.runAction(SKAction.repeatActionForever(SKAction.animateWithTextures(textures, timePerFrame: 0.2)))
+        
+        
+    }
+    
   // MARK: - Init Bird
   func initBird() {
     
@@ -174,7 +335,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     bird.physicsBody?.contactTestBitMask = FSPipeCategory | FSGapCategory | FSBoundaryCategory
     bird.physicsBody?.collisionBitMask = FSPipeCategory | FSBoundaryCategory
     // 1
-    bird.physicsBody?.affectedByGravity = false
+    bird.physicsBody?.affectedByGravity = true
     bird.physicsBody?.allowsRotation = false
     bird.physicsBody?.restitution = 0.0
     bird.zPosition = 50
@@ -199,10 +360,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     // 2
     for i in 0...2 {
-        let tile = SKSpriteNode(imageNamed: "bg")
+        let tile = SKSpriteNode(imageNamed: "background")
         tile.anchorPoint = CGPointZero
         tile.position = CGPoint(x: CGFloat(i) * 640.0, y: 0.0)
-        tile.name = "bg"
+        tile.name = "background"
         tile.zPosition = 10
         background.addChild(tile)
     }
@@ -216,7 +377,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     background.position = CGPoint(x: background.position.x + CGFloat(posX), y: 0.0)
     
     // 4
-    background.enumerateChildNodesWithName("bg") { (node, stop) in
+    background.enumerateChildNodesWithName("background") { (node, stop) in
         let background_screen_position = self.background.convertPoint(node.position, toNode: self)
         
         if background_screen_position.x <= -node.frame.size.width {
@@ -308,9 +469,33 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func initHUD() {
         
         
+        //bird UINODE
+        
+        birdHudNode = SKSpriteNode(imageNamed: "bluebird1")
+        birdHudNode.position = CGPoint(x: 14, y: CGRectGetMaxY(frame) - 18)
+        birdHudNode.zPosition = 700
+        birdHudNode.size = CGSize(width: 16, height: 16)
+        
+        addChild(birdHudNode)
+        // 1
+        total_score = SKLabelNode(fontNamed:"MarkerFelt-Wide")
+        total_score.position = CGPoint(x: CGRectGetMidX(frame) - 132, y: CGRectGetMaxY(frame) - 26)
+        
+        if Defaults["totalscore"].int != nil {
+        total_score.text = String(Defaults["totalscore"].int!)
+        totalscore = Defaults["totalscore"].int!
+        }else {
+            total_score.text = "0"
+        }
+        total_score.zPosition = 50
+        total_score.fontSize = 40/2
+        total_score.horizontalAlignmentMode = .Left
+        
+        addChild(total_score)
+        
         // 1
         high_score = SKLabelNode(fontNamed:"MarkerFelt-Wide")
-        high_score.position = CGPoint(x: CGRectGetMidX(frame), y: CGRectGetMaxY(frame) - 50)
+        high_score.position = CGPoint(x: CGRectGetMidX(frame), y: CGRectGetMaxY(frame) - 32)
         high_score.text = "0"
         high_score.zPosition = 50
         addChild(high_score)
@@ -320,13 +505,30 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         label_score.position = CGPoint(x: CGRectGetMidX(frame), y: CGRectGetMaxY(frame) - 100)
         label_score.text = "0"
         label_score.zPosition = 50
-        addChild(label_score)
+//        addChild(label_score)
         
         // 2
         instructions = SKSpriteNode(imageNamed: "TapToStart")
         instructions.position = CGPoint(x: CGRectGetMidX(frame), y: CGRectGetMidY(frame) - 10)
         instructions.zPosition = 50
-        addChild(instructions)
+//        addChild(instructions)
+    }
+    
+    func displayHighScore() {
+        
+        // 1
+        label_score = SKLabelNode(fontNamed:"MarkerFelt-Wide")
+        label_score.position = CGPoint(x: CGRectGetMidX(frame), y: CGRectGetMaxY(frame) - 100)
+        label_score.text = "New High Score"
+        label_score.zPosition = 701
+        addChild(label_score)
+        
+        // Create the actions
+        let actionLength = SKAction.moveTo(CGPoint(x: CGRectGetMidX(frame), y: CGRectGetMaxY(frame) - 100), duration: NSTimeInterval(2.0))
+        let actionMoveDone = SKAction.removeFromParent()
+
+
+        self.label_score.runAction(SKAction.sequence([actionLength,actionMoveDone]))
     }
     
   // MARK: - Game Over helpers
@@ -397,32 +599,40 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     if collision == (FSPlayerCategory | FSBoundaryCategory) {
         
         
-        if highscore <= score && score != 0 {
-            
-            highscore = score
-            high_score.text = "\(score)"
-        }
-        println("hitground")
-        score = 0
-        label_score.text = "\(score)"
-        
-        if bird.position.y < 150 {
-//            gameOver()
-        }
+//        if highscore <= score && score != 0 {
+//            
+//            highscore = score
+//            high_score.text = "\(score)"
+//        }
+//        println("hitground")
+//        score = 0
+//        label_score.text = "\(score)"
+//        
+//        if bird.position.y < 150 {
+////            gameOver()
+//        }
     }
     
     if collision == (FSPlayerCategory | FSCoinCategory) {
         
+        totalscore++
+        total_score.text = "\(totalscore)"
+        
+        Defaults["totalscore"] = totalscore
+        
         score++
-        label_score.text = "\(score)"
+//        label_score.text = "\(score)"
         removeCoin(secondBody.node as! SKSpriteNode)
         println("GOT COIN")
+        
+//        audioPlayer.stop()
 //        var alertSound = NSURL(fileURLWithPath: NSBundle.mainBundle().pathForResource("collectcoin", ofType: "wav")!)
 //        AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayback, error: nil)
 //        AVAudioSession.sharedInstance().setActive(true, error: nil)
 //        
 //        var error:NSError?
 //        audioPlayer = AVAudioPlayer(contentsOfURL: alertSound, error: &error)
+//        audioPlayer.stop()
 //        audioPlayer.prepareToPlay()
 //        audioPlayer.play()
         
@@ -430,10 +640,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     if collision == (FSPlayerCategory | FSMegaCoinCategory) {
         
+        totalscore+=10
+        total_score.text = "\(totalscore)"
+        
         score+=10
-        label_score.text = "\(score)"
+//        label_score.text = "\(score)"
         removeCoin(secondBody.node as! SKSpriteNode)
         println("GOT MEGA COIN")
+//        var randget = random(min:CGFloat(-0.2), max: CGFloat(0.2))
+//        firstBody.applyImpulse(CGVector(dx: randget, dy: 0))
 //        var alertSound = NSURL(fileURLWithPath: NSBundle.mainBundle().pathForResource("collectcoin", ofType: "wav")!)
 //        AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayback, error: nil)
 //        AVAudioSession.sharedInstance().setActive(true, error: nil)
@@ -446,10 +661,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     if collision == (FSPlayerCategory | FSUltraCoinCategory) {
         
+        totalscore+=25
+        total_score.text = "\(totalscore)"
+        
         score+=25
-        label_score.text = "\(score)"
+//        label_score.text = "\(score)"
         removeCoin(secondBody.node as! SKSpriteNode)
         println("GOT MEGA COIN")
+        
+//        var randget = random(min:CGFloat(-20.0), max: CGFloat(20.0))
+//        firstBody.applyImpulse(CGVector(dx: randget, dy: 0))
         //        var alertSound = NSURL(fileURLWithPath: NSBundle.mainBundle().pathForResource("collectcoin", ofType: "wav")!)
         //        AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayback, error: nil)
         //        AVAudioSession.sharedInstance().setActive(true, error: nil)
@@ -457,16 +678,21 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         //        var error:NSError?
         //        audioPlayer = AVAudioPlayer(contentsOfURL: alertSound, error: &error)
         //        audioPlayer.prepareToPlay()
-        //        audioPlayer.play()
+//                audioPlayer.play()
         
     }
     
     if collision == (FSPlayerCategory | FSImpossibleCoinCategory) {
         
+        totalscore+=45
+        total_score.text = "\(totalscore)"
+        
         score+=45
-        label_score.text = "\(score)"
+//        label_score.text = "\(score)"
         removeCoin(secondBody.node as! SKSpriteNode)
         println("GOT MEGA COIN")
+        
+//        firstBody.applyImpulse(CGVector(dx: 0, dy: 25))
         //        var alertSound = NSURL(fileURLWithPath: NSBundle.mainBundle().pathForResource("collectcoin", ofType: "wav")!)
         //        AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayback, error: nil)
         //        AVAudioSession.sharedInstance().setActive(true, error: nil)
@@ -474,7 +700,28 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         //        var error:NSError?
         //        audioPlayer = AVAudioPlayer(contentsOfURL: alertSound, error: &error)
         //        audioPlayer.prepareToPlay()
-        //        audioPlayer.play()
+//                audioPlayer.play()
+        
+    }
+    if collision == (FSPlayerCategory | FSFloorCategory) {
+        
+        
+       
+        println("hit floor")
+        if highscore < score && score != 0 {
+            
+            highscore = score
+            high_score.text = "\(score)"
+            self.runAction(playHighScoreEffect)
+            displayHighScore()
+        }
+        println("hitground")
+        score = 0
+//        label_score.text = "\(score)"
+        
+        if bird.position.y < 150 {
+            //            gameOver()
+        }
         
     }
     
@@ -483,6 +730,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func removeCoin (coin:SKSpriteNode) {
         
         coin.removeFromParent()
+//        playSoundEffect = SKAction.playSoundFileNamed("SFX_Powerup_49.wav", waitForCompletion: false)
+        self.runAction(playSoundEffect)
+        
+    }
+    
+    func initOptionButton() {
+        
+        optionButton = SKSpriteNode(imageNamed: "man1")
+        optionButton.position = CGPoint(x: CGRectGetMidX(frame) + 140, y: CGRectGetMaxY(frame) - 20)
+      
+        optionButton.zPosition = 60
+        addChild(optionButton)
         
     }
     
@@ -520,6 +779,66 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
   }
     
+    override func touchesEnded(touches: Set<NSObject>, withEvent event: UIEvent) {
+        for touch: AnyObject in touches {
+            let location = touch.locationInNode(self)
+            
+            if CGRectContainsPoint(optionButton.frame, location) {
+                println("Touched Option")
+                
+                optionView.hidden = false
+                
+                
+            } else {
+                
+                println("Nothing here")
+            }
+            
+        }
+    }
+    
+    func initOptionMenu() {
+        
+        optionView = UIView()
+        optionView.frame = CGRectMake(CGRectGetMidX(frame) - 150,103,300,400)
+        optionView.backgroundColor = UIColor.blackColor()
+        optionView.layer.cornerRadius = 6.0
+        optionView.layer.borderWidth = 4.0
+        optionView.layer.borderColor = UIColor.darkGrayColor().CGColor
+        optionView.hidden = true
+        
+        //                CGPoint(x: CGRectGetMidX(frame) - 100, y: CGRectGetMaxY(frame) - 50)
+        self.view?.addSubview(optionView)
+        
+        // Add Character Frame
+        // char size CGSize(width: 34*0.9, height: 44*0.9)
+        var characterImageView = UIImageView()
+        characterImageView.frame = CGRectMake(optionView.frame.width/2-130,20,44,44)
+        var man = UIImage(named: "greenguy1")
+        characterImageView.image = man
+        optionView.addSubview(characterImageView)
+        //------------------------
+        
+        // Add Close button
+        var closeButton = UIButton()
+        closeButton.frame = CGRectMake(optionView.frame.width-25,5,20,20)
+        closeButton.backgroundColor = UIColor.redColor()
+        closeButton.titleLabel?.text = "X"
+        closeButton.titleLabel?.textColor = UIColor.blackColor()
+        closeButton.addTarget(self, action: "closeMenu:", forControlEvents: UIControlEvents.TouchUpInside)
+        optionView.addSubview(closeButton)
+        
+    }
+    
+    func closeMenu(sender:UIButton!) {
+        
+        optionView.hidden = true
+        bird.removeFromParent()
+        initGreenGuy()
+
+        
+    }
+    
     func notInAir() {
         
 //        bird.r
@@ -538,7 +857,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func createCoin() {
         
         
-        let coin = SKSpriteNode(imageNamed: "bird1")
+        let coin = SKSpriteNode(imageNamed: "bluebird1")
         
         coin.physicsBody = SKPhysicsBody(circleOfRadius: coin.size.width / 2.5)
         coin.physicsBody?.dynamic = true
@@ -555,14 +874,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         // Position the monster slightly off-screen along the right edge,
         // and along a random position along the Y axis as calculated above
         coin.position = CGPoint(x: size.width + coin.size.width/2, y: 132)
-        coin.zRotation = CGFloat(M_PI_2)
+//        coin.zRotation = CGFloat(M_PI_2)
         coin.size = CGSize(width: 30, height: 30)
         
         // Add the monster to the scene
         addChild(coin)
         
         // Determine speed of the monster
-        let actualDuration = random(min:CGFloat(10.0), max: CGFloat(20.0))
+        let actualDuration = random(min:CGFloat(5.0), max: CGFloat(10.0))
         
         // Create the actions
         let actionMove = SKAction.moveTo(CGPoint(x: -self.size.width, y: 132), duration: NSTimeInterval(actualDuration))
@@ -572,14 +891,30 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 //            let gameOverScene = GameOverScene(size: self.size, won: false)
 //            self.view?.presentScene(gameOverScene, transition: nil)
         }
-        coin.runAction(SKAction.sequence([actionMove, loseAction, actionMoveDone]))
+        let oscillate = SKAction.oscillation(amplitude: 8, timePeriod: 2, midPoint: coin.position)
+//        coin.runAction(SKAction.sequence([oscillate]))
+        coin.runAction(SKAction.repeatActionForever(oscillate))
+        coin.runAction(SKAction.moveByX(-self.size.width-30, y: 0, duration: NSTimeInterval(actualDuration)))
         
+        let texture1 = SKTexture(imageNamed: "bluebird1")
+        let texture2 = SKTexture(imageNamed: "bluebird2")
+//        let texture3 = SKTexture(imageNamed: "copper3")
+//        let texture4 = SKTexture(imageNamed: "copper4")
+//        let texture5 = SKTexture(imageNamed: "copper5")
+//        let texture6 = SKTexture(imageNamed: "copper6")
+//        let texture7 = SKTexture(imageNamed: "copper7")
+        let textures = [texture1, texture2]
+        var randomflapspeed = random(min:0.3, max: 0.6)
+        
+        coin.runAction(SKAction.repeatActionForever(SKAction.animateWithTextures(textures, timePerFrame: NSTimeInterval(randomflapspeed))))
+        
+
         
     }
     
     func createMegaCoin() {
         
-        let coin = SKSpriteNode(imageNamed: "bird1")
+        let coin = SKSpriteNode(imageNamed: "bigblue1")
         
         coin.physicsBody = SKPhysicsBody(circleOfRadius: coin.size.width / 2.5)
         coin.physicsBody?.dynamic = true
@@ -596,7 +931,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         // Position the monster slightly off-screen along the right edge,
         // and along a random position along the Y axis as calculated above
         coin.position = CGPoint(x: size.width + coin.size.width/2, y: 232)
-        coin.zRotation = CGFloat(M_PI_2)
+//        coin.zRotation = CGFloat(M_PI_2)
         coin.size = CGSize(width: 50, height: 50)
         
         // Add the monster to the scene
@@ -615,12 +950,23 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         coin.runAction(SKAction.sequence([actionMove, loseAction, actionMoveDone]))
         
+        let texture1 = SKTexture(imageNamed: "bigblue1")
+        let texture2 = SKTexture(imageNamed: "bigblue2")
+//        let texture3 = SKTexture(imageNamed: "copper3")
+//        let texture4 = SKTexture(imageNamed: "copper4")
+//        let texture5 = SKTexture(imageNamed: "copper5")
+//        let texture6 = SKTexture(imageNamed: "copper6")
+//        let texture7 = SKTexture(imageNamed: "copper7")
+        let textures = [texture1, texture2]
+        
+        coin.runAction(SKAction.repeatActionForever(SKAction.animateWithTextures(textures, timePerFrame: 0.5)))
+        
         
     }
     
     func createUltraCoin() {
         
-        let coin = SKSpriteNode(imageNamed: "bird1")
+        let coin = SKSpriteNode(imageNamed: "orangebird1")
         
         coin.physicsBody = SKPhysicsBody(circleOfRadius: coin.size.width / 2.5)
         coin.physicsBody?.dynamic = true
@@ -629,6 +975,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         coin.physicsBody?.collisionBitMask = FSPlayerCategory
         coin.physicsBody?.affectedByGravity = false
         coin.zPosition = 100
+//        coin.physicsBody?.affectedByGravity = true
         
         // Determine where to spawn the monster along the Y axis
         let actualY = random(min:coin.size.height/2, max: size.height - coin.size.height/2)
@@ -637,8 +984,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         // Position the monster slightly off-screen along the right edge,
         // and along a random position along the Y axis as calculated above
         coin.position = CGPoint(x: size.width + coin.size.width/2, y: 402)
-        coin.zRotation = CGFloat(M_PI_2)
-        coin.size = CGSize(width: 10, height: 10)
+//        coin.zRotation = CGFloat(M_PI_2)
+        coin.size = CGSize(width: 22, height: 22)
         
         // Add the monster to the scene
         addChild(coin)
@@ -656,12 +1003,28 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         coin.runAction(SKAction.sequence([actionMove, loseAction, actionMoveDone]))
         
+        let texture1 = SKTexture(imageNamed: "orangebird1")
+        let texture2 = SKTexture(imageNamed: "orangebird2")
+//        let texture3 = SKTexture(imageNamed: "silver3")
+//        let texture4 = SKTexture(imageNamed: "silver4")
+//        let texture5 = SKTexture(imageNamed: "silver5")
+//        let texture6 = SKTexture(imageNamed: "silver6")
+//        let texture7 = SKTexture(imageNamed: "silver7")
+        let textures = [texture1, texture2]
         
-    }
+        coin.runAction(SKAction.repeatActionForever(SKAction.animateWithTextures(textures, timePerFrame: 0.3)))
+        
+//        coin.runAction(SKAction.repeatActionForever(SKAction.runBlock({ () -> Void in
+////                    var randget = random(min:CGFloat(-0.2), max: CGFloat(0.2))
+//                    coin.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 0.2))
+//        })))
+        
+        
+            }
 
     func createImpossibleCoin() {
         
-        let coin = SKSpriteNode(imageNamed: "bird1")
+        let coin = SKSpriteNode(imageNamed: "topbird1")
         
         coin.physicsBody = SKPhysicsBody(circleOfRadius: coin.size.width / 2.5)
         coin.physicsBody?.dynamic = true
@@ -678,8 +1041,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         // Position the monster slightly off-screen along the right edge,
         // and along a random position along the Y axis as calculated above
         coin.position = CGPoint(x: size.width + coin.size.width/2, y: 502)
-        coin.zRotation = CGFloat(M_PI_2)
-        coin.size = CGSize(width: 10, height: 10)
+//        coin.zRotation = CGFloat(M_PI_2)
+        coin.size = CGSize(width: 16, height: 16)
         
         // Add the monster to the scene
         addChild(coin)
@@ -696,6 +1059,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             //            self.view?.presentScene(gameOverScene, transition: nil)
         }
         coin.runAction(SKAction.sequence([actionMove, loseAction, actionMoveDone]))
+        
+        let texture1 = SKTexture(imageNamed: "brightgreen1")
+        let texture2 = SKTexture(imageNamed: "brightgreen2")
+        let texture3 = SKTexture(imageNamed: "coin3")
+        let texture4 = SKTexture(imageNamed: "coin4")
+        let texture5 = SKTexture(imageNamed: "coin5")
+        let texture6 = SKTexture(imageNamed: "coin6")
+        let texture7 = SKTexture(imageNamed: "coin7")
+        let textures = [texture1, texture2]
+        
+        coin.runAction(SKAction.repeatActionForever(SKAction.animateWithTextures(textures, timePerFrame: 0.3)))
         
         
     }
@@ -726,4 +1100,58 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
 
   }
+    
+    //=====================================================================================================
+    // AD STUFF===========================================================================================================================================================================
+    
+    func loadAds(){
+        adBannerView = ADBannerView(frame: CGRect.zeroRect)
+        adBannerView!.center = CGPoint(x: adBannerView!.center.x, y: view!.bounds.size.height - adBannerView!.frame.size.height / 2)
+        adBannerView!.delegate = self
+        adBannerView!.hidden = true
+        view!.addSubview(adBannerView!)
+    }
+    
+    func bannerViewWillLoadAd(banner: ADBannerView!) {
+        
+        
+        println("Banner will load Ad")
+        
+    }
+    
+    func bannerViewDidLoadAd(banner: ADBannerView!) {
+        
+        if adBannerView != nil {
+            
+            adBannerView!.hidden = false
+            self.adBannerView!.alpha = 1.0
+            
+            println("Ad Loaded")
+        }
+        
+    }
+    
+    func bannerViewActionDidFinish(banner: ADBannerView!) {
+        
+        
+        println("Ad Banner Finished")
+        
+    }
+    
+    func bannerViewActionShouldBegin(banner: ADBannerView!, willLeaveApplication willLeave: Bool) -> Bool {
+        
+        
+        
+        println("Ad Banner Begin")
+        return true
+    }
+    
+    func bannerView(banner: ADBannerView!, didFailToReceiveAdWithError error: NSError!) {
+        
+        if adBannerView != nil {
+            
+            adBannerView!.hidden = true
+        }
+    }
+
 }
