@@ -36,8 +36,8 @@ class GameViewController: UIViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
 
-//    skView.showsFPS = true
-//    skView.showsNodeCount = true
+    skView.showsFPS = true
+    skView.showsNodeCount = true
 //    skView.showsPhysics   = true
     
     if skView.scene == nil {

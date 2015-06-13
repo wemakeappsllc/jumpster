@@ -184,7 +184,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, ADBannerViewDelegate {
     initOptionButton()
     initOptionMenu()
     
-    loadAds()
+//    loadAds()
     
     
     runAction(SKAction.repeatActionForever(
@@ -267,6 +267,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate, ADBannerViewDelegate {
     
     // 3
     var timerYellow = NSTimer.scheduledTimerWithTimeInterval(211.0, target: self, selector: Selector("newFlock2"), userInfo: nil, repeats: false)
+    
+//    // 3 TEST METHOD
+//    var timerYellow = NSTimer.scheduledTimerWithTimeInterval(4.0, target: self, selector: Selector("newFlock2"), userInfo: nil, repeats: false)
     
     var timerThomas = NSTimer.scheduledTimerWithTimeInterval(143.0, target: self, selector: Selector("thomasSighting"), userInfo: nil, repeats: true)
     
@@ -1206,10 +1209,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate, ADBannerViewDelegate {
 //            let gameOverScene = GameOverScene(size: self.size, won: false)
 //            self.view?.presentScene(gameOverScene, transition: nil)
         }
+        
         let oscillate = SKAction.oscillation(amplitude: 8, timePeriod: 2, midPoint: coin.position)
-//        coin.runAction(SKAction.sequence([oscillate]))
+        //        coin.runAction(SKAction.sequence([oscillate]))
         coin.runAction(SKAction.repeatActionForever(oscillate))
-        coin.runAction(SKAction.moveByX(-self.size.width-30, y: 0, duration: NSTimeInterval(actualDuration)))
+        var moveBird = SKAction.moveByX(-self.size.width-30, y: 0, duration: NSTimeInterval(actualDuration))
+        //        var oscillateforever = SKAction.repeatActionForever(oscillate)
+        //        coin.runAction(SKAction.moveByX(-self.size.width-30, y: 0, duration: NSTimeInterval(actualDuration)))
+        coin.runAction(SKAction.sequence([moveBird,actionMoveDone]))
         
         let texture1 = SKTexture(imageNamed: "bluebird1")
         let texture2 = SKTexture(imageNamed: "bluebird2")
@@ -1266,7 +1273,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate, ADBannerViewDelegate {
         let oscillate = SKAction.oscillation(amplitude: 8, timePeriod: 2, midPoint: coin.position)
         //        coin.runAction(SKAction.sequence([oscillate]))
         coin.runAction(SKAction.repeatActionForever(oscillate))
-        coin.runAction(SKAction.moveByX(-self.size.width-30, y: 0, duration: NSTimeInterval(actualDuration)))
+        var moveBird = SKAction.moveByX(-self.size.width-30, y: 0, duration: NSTimeInterval(actualDuration))
+        //        var oscillateforever = SKAction.repeatActionForever(oscillate)
+        //        coin.runAction(SKAction.moveByX(-self.size.width-30, y: 0, duration: NSTimeInterval(actualDuration)))
+        coin.runAction(SKAction.sequence([moveBird,actionMoveDone]))
         
         let texture1 = SKTexture(imageNamed: "redbird1")
         let texture2 = SKTexture(imageNamed: "redbird2")
@@ -1324,7 +1334,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate, ADBannerViewDelegate {
         let oscillate = SKAction.oscillation(amplitude: 8, timePeriod: 2, midPoint: coin.position)
         //        coin.runAction(SKAction.sequence([oscillate]))
         coin.runAction(SKAction.repeatActionForever(oscillate))
-        coin.runAction(SKAction.moveByX(-self.size.width-30, y: 0, duration: NSTimeInterval(actualDuration)))
+        var moveBird = SKAction.moveByX(-self.size.width-30, y: 0, duration: NSTimeInterval(actualDuration))
+        //        var oscillateforever = SKAction.repeatActionForever(oscillate)
+        //        coin.runAction(SKAction.moveByX(-self.size.width-30, y: 0, duration: NSTimeInterval(actualDuration)))
+        coin.runAction(SKAction.sequence([moveBird,actionMoveDone]))
         
         let texture1 = SKTexture(imageNamed: "blackbird1")
         let texture2 = SKTexture(imageNamed: "blackbird2")
@@ -1379,10 +1392,19 @@ class GameScene: SKScene, SKPhysicsContactDelegate, ADBannerViewDelegate {
             //            let gameOverScene = GameOverScene(size: self.size, won: false)
             //            self.view?.presentScene(gameOverScene, transition: nil)
         }
+        //ORIGINAL METHODS---------------------------
+//        let oscillate = SKAction.oscillation(amplitude: 8, timePeriod: 2, midPoint: coin.position)
+//        //        coin.runAction(SKAction.sequence([oscillate]))
+//        coin.runAction(SKAction.repeatActionForever(oscillate))
+//        coin.runAction(SKAction.moveByX(-self.size.width-30, y: 0, duration: NSTimeInterval(actualDuration)))
+        //-----------------------------------------------
         let oscillate = SKAction.oscillation(amplitude: 8, timePeriod: 2, midPoint: coin.position)
         //        coin.runAction(SKAction.sequence([oscillate]))
         coin.runAction(SKAction.repeatActionForever(oscillate))
-        coin.runAction(SKAction.moveByX(-self.size.width-30, y: 0, duration: NSTimeInterval(actualDuration)))
+        var moveBird = SKAction.moveByX(-self.size.width-30, y: 0, duration: NSTimeInterval(actualDuration))
+        //        var oscillateforever = SKAction.repeatActionForever(oscillate)
+        //        coin.runAction(SKAction.moveByX(-self.size.width-30, y: 0, duration: NSTimeInterval(actualDuration)))
+        coin.runAction(SKAction.sequence([moveBird,actionMoveDone]))
         
         let texture1 = SKTexture(imageNamed: "rainbow1")
         let texture2 = SKTexture(imageNamed: "rainbow2")
@@ -1441,7 +1463,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate, ADBannerViewDelegate {
         let oscillate = SKAction.oscillation(amplitude: 8, timePeriod: 2, midPoint: coin.position)
         //        coin.runAction(SKAction.sequence([oscillate]))
         coin.runAction(SKAction.repeatActionForever(oscillate))
-        coin.runAction(SKAction.moveByX(-self.size.width-30, y: 0, duration: NSTimeInterval(actualDuration)))
+        var moveBird = SKAction.moveByX(-self.size.width-30, y: 0, duration: NSTimeInterval(actualDuration))
+        //        var oscillateforever = SKAction.repeatActionForever(oscillate)
+        //        coin.runAction(SKAction.moveByX(-self.size.width-30, y: 0, duration: NSTimeInterval(actualDuration)))
+        coin.runAction(SKAction.sequence([moveBird,actionMoveDone]))
         
         let texture1 = SKTexture(imageNamed: "brownbird1")
         let texture2 = SKTexture(imageNamed: "brownbird2")
@@ -1501,7 +1526,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate, ADBannerViewDelegate {
         let oscillate = SKAction.oscillation(amplitude: 8, timePeriod: 2, midPoint: coin.position)
         //        coin.runAction(SKAction.sequence([oscillate]))
         coin.runAction(SKAction.repeatActionForever(oscillate))
-        coin.runAction(SKAction.moveByX(-self.size.width-30, y: 0, duration: NSTimeInterval(actualDuration)))
+        var moveBird = SKAction.moveByX(-self.size.width-30, y: 0, duration: NSTimeInterval(actualDuration))
+//        var oscillateforever = SKAction.repeatActionForever(oscillate)
+//        coin.runAction(SKAction.moveByX(-self.size.width-30, y: 0, duration: NSTimeInterval(actualDuration)))
+        coin.runAction(SKAction.sequence([moveBird,actionMoveDone]))
         
         let texture1 = SKTexture(imageNamed: "yellowbird1")
         let texture2 = SKTexture(imageNamed: "yellowbird2")
@@ -1562,7 +1590,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate, ADBannerViewDelegate {
         let oscillate = SKAction.oscillation(amplitude: 8, timePeriod: 2, midPoint: coin.position)
         //        coin.runAction(SKAction.sequence([oscillate]))
         coin.runAction(SKAction.repeatActionForever(oscillate))
-        coin.runAction(SKAction.moveByX(-self.size.width-30, y: 0, duration: NSTimeInterval(actualDuration)))
+        var moveBird = SKAction.moveByX(-self.size.width-30, y: 0, duration: NSTimeInterval(actualDuration))
+        //        var oscillateforever = SKAction.repeatActionForever(oscillate)
+        //        coin.runAction(SKAction.moveByX(-self.size.width-30, y: 0, duration: NSTimeInterval(actualDuration)))
+        coin.runAction(SKAction.sequence([moveBird,actionMoveDone]))
         
         let texture1 = SKTexture(imageNamed: "purplebird1")
         let texture2 = SKTexture(imageNamed: "purplebird2")
@@ -1620,7 +1651,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate, ADBannerViewDelegate {
         let oscillate = SKAction.oscillation(amplitude: 8, timePeriod: 2, midPoint: coin.position)
         //        coin.runAction(SKAction.sequence([oscillate]))
         coin.runAction(SKAction.repeatActionForever(oscillate))
-        coin.runAction(SKAction.moveByX(-self.size.width-30, y: 0, duration: NSTimeInterval(actualDuration)))
+        var moveBird = SKAction.moveByX(-self.size.width-30, y: 0, duration: NSTimeInterval(actualDuration))
+        //        var oscillateforever = SKAction.repeatActionForever(oscillate)
+        //        coin.runAction(SKAction.moveByX(-self.size.width-30, y: 0, duration: NSTimeInterval(actualDuration)))
+        coin.runAction(SKAction.sequence([moveBird,actionMoveDone]))
         
         let texture1 = SKTexture(imageNamed: "whitebird1")
         let texture2 = SKTexture(imageNamed: "whitebird2")
@@ -1679,7 +1713,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate, ADBannerViewDelegate {
         let oscillate = SKAction.oscillation(amplitude: 4, timePeriod: 2, midPoint: coin.position)
         //        coin.runAction(SKAction.sequence([oscillate]))
         coin.runAction(SKAction.repeatActionForever(oscillate))
-        coin.runAction(SKAction.moveByX(-self.size.width-50, y: 0, duration: NSTimeInterval(actualDuration)))
+        var moveBird = SKAction.moveByX(-self.size.width-50, y: 0, duration: NSTimeInterval(actualDuration))
+        //        var oscillateforever = SKAction.repeatActionForever(oscillate)
+        //        coin.runAction(SKAction.moveByX(-self.size.width-30, y: 0, duration: NSTimeInterval(actualDuration)))
+        coin.runAction(SKAction.sequence([moveBird,actionMoveDone]))
         
         let texture1 = SKTexture(imageNamed: "bigblue1")
         let texture2 = SKTexture(imageNamed: "bigblue2")
@@ -1734,9 +1771,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate, ADBannerViewDelegate {
         }
 //        coin.runAction(SKAction.sequence([actionMove, loseAction, actionMoveDone]))
         let oscillate = SKAction.oscillation(amplitude: 6, timePeriod: 2, midPoint: coin.position)
-
+        //        coin.runAction(SKAction.sequence([oscillate]))
         coin.runAction(SKAction.repeatActionForever(oscillate))
-        coin.runAction(SKAction.moveByX(-self.size.width-30, y: 0, duration: NSTimeInterval(actualDuration)))
+        var moveBird = SKAction.moveByX(-self.size.width-30, y: 0, duration: NSTimeInterval(actualDuration))
+        //        var oscillateforever = SKAction.repeatActionForever(oscillate)
+        //        coin.runAction(SKAction.moveByX(-self.size.width-30, y: 0, duration: NSTimeInterval(actualDuration)))
+        coin.runAction(SKAction.sequence([moveBird,actionMoveDone]))
         
         let texture1 = SKTexture(imageNamed: "orangebird1")
         let texture2 = SKTexture(imageNamed: "orangebird2")
@@ -1796,9 +1836,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate, ADBannerViewDelegate {
 //        coin.runAction(SKAction.sequence([actionMove, loseAction, actionMoveDone]))
         
         let oscillate = SKAction.oscillation(amplitude: 2, timePeriod: 4, midPoint: coin.position)
-        
+        //        coin.runAction(SKAction.sequence([oscillate]))
         coin.runAction(SKAction.repeatActionForever(oscillate))
-        coin.runAction(SKAction.moveByX(-self.size.width-30, y: 0, duration: NSTimeInterval(actualDuration)))
+        var moveBird = SKAction.moveByX(-self.size.width-30, y: 0, duration: NSTimeInterval(actualDuration))
+        //        var oscillateforever = SKAction.repeatActionForever(oscillate)
+        //        coin.runAction(SKAction.moveByX(-self.size.width-30, y: 0, duration: NSTimeInterval(actualDuration)))
+        coin.runAction(SKAction.sequence([moveBird,actionMoveDone]))
         
         let texture1 = SKTexture(imageNamed: "brightgreen1")
         let texture2 = SKTexture(imageNamed: "brightgreen2")
