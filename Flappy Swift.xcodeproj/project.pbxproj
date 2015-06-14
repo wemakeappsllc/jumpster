@@ -26,7 +26,10 @@
 		E935F46A1B2A50E5004F9924 /* SFX_Powerup_47.wav in Resources */ = {isa = PBXBuildFile; fileRef = E935F4691B2A50E5004F9924 /* SFX_Powerup_47.wav */; };
 		E935F46C1B2A50FA004F9924 /* SFX_Powerup_34.wav in Resources */ = {isa = PBXBuildFile; fileRef = E935F46B1B2A50FA004F9924 /* SFX_Powerup_34.wav */; };
 		E935F46E1B2B49EA004F9924 /* MenuScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = E935F46D1B2B49EA004F9924 /* MenuScene.swift */; };
+		E935F4701B2D2DA9004F9924 /* TopBirdScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = E935F46F1B2D2DA9004F9924 /* TopBirdScene.swift */; };
 		E97C45461B28DCC700AA50F1 /* iAd.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E97C45451B28DCC700AA50F1 /* iAd.framework */; };
+		E99E88AB1B2D49C10064EE51 /* win.wav in Resources */ = {isa = PBXBuildFile; fileRef = E99E88A91B2D49C10064EE51 /* win.wav */; };
+		E99E88AC1B2D49C10064EE51 /* hit01.wav in Resources */ = {isa = PBXBuildFile; fileRef = E99E88AA1B2D49C10064EE51 /* hit01.wav */; };
 		E9AC1D4E1B25164500F2468B /* man1@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = E9AC1D4A1B25164500F2468B /* man1@2x.png */; };
 		E9AC1D4F1B25164500F2468B /* man2@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = E9AC1D4B1B25164500F2468B /* man2@2x.png */; };
 		E9AC1D501B25164500F2468B /* man3@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = E9AC1D4C1B25164500F2468B /* man3@2x.png */; };
@@ -71,7 +74,10 @@
 		E935F4691B2A50E5004F9924 /* SFX_Powerup_47.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = SFX_Powerup_47.wav; sourceTree = "<group>"; };
 		E935F46B1B2A50FA004F9924 /* SFX_Powerup_34.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = SFX_Powerup_34.wav; sourceTree = "<group>"; };
 		E935F46D1B2B49EA004F9924 /* MenuScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuScene.swift; sourceTree = "<group>"; };
+		E935F46F1B2D2DA9004F9924 /* TopBirdScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TopBirdScene.swift; sourceTree = "<group>"; };
 		E97C45451B28DCC700AA50F1 /* iAd.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = iAd.framework; path = System/Library/Frameworks/iAd.framework; sourceTree = SDKROOT; };
+		E99E88A91B2D49C10064EE51 /* win.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = win.wav; sourceTree = "<group>"; };
+		E99E88AA1B2D49C10064EE51 /* hit01.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = hit01.wav; sourceTree = "<group>"; };
 		E9AC1D4A1B25164500F2468B /* man1@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "man1@2x.png"; sourceTree = "<group>"; };
 		E9AC1D4B1B25164500F2468B /* man2@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "man2@2x.png"; sourceTree = "<group>"; };
 		E9AC1D4C1B25164500F2468B /* man3@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "man3@2x.png"; path = "Flappy Swift/images/man3@2x.png"; sourceTree = SOURCE_ROOT; };
@@ -127,8 +133,11 @@
 				4EC69CDD19726D340094A23E /* AppDelegate.swift */,
 				E9C288241B2953DC003AD446 /* SwiftyUserDefaults.swift */,
 				E935F46D1B2B49EA004F9924 /* MenuScene.swift */,
+				E935F46F1B2D2DA9004F9924 /* TopBirdScene.swift */,
 				4EC69CE119726D340094A23E /* GameScene.swift */,
 				4EC69CE319726D340094A23E /* GameViewController.swift */,
+				E99E88A91B2D49C10064EE51 /* win.wav */,
+				E99E88AA1B2D49C10064EE51 /* hit01.wav */,
 				E9C288221B294D53003AD446 /* bossfight.mp3 */,
 				E935F46B1B2A50FA004F9924 /* SFX_Powerup_34.wav */,
 				E935F4671B2A5081004F9924 /* SFX_Powerup_21.wav */,
@@ -280,6 +289,7 @@
 				4EC69D0F197278E30094A23E /* pipe.png in Resources */,
 				4EC69CE719726D340094A23E /* Main.storyboard in Resources */,
 				4EC69D0A197278E30094A23E /* bird1.png in Resources */,
+				E99E88AB1B2D49C10064EE51 /* win.wav in Resources */,
 				E9AC1D501B25164500F2468B /* man3@2x.png in Resources */,
 				E9AC1D511B25164500F2468B /* man4@2x.png in Resources */,
 				4EC69D09197278E30094A23E /* bg@2x.png in Resources */,
@@ -287,6 +297,7 @@
 				E9C7C6A01B27763400F380DC /* background@2x.png in Resources */,
 				E935F4681B2A5081004F9924 /* SFX_Powerup_21.wav in Resources */,
 				4EC69D10197278E30094A23E /* TapToStart.png in Resources */,
+				E99E88AC1B2D49C10064EE51 /* hit01.wav in Resources */,
 				E935F46C1B2A50FA004F9924 /* SFX_Powerup_34.wav in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -306,6 +317,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E9C288251B2953DC003AD446 /* SwiftyUserDefaults.swift in Sources */,
+				E935F4701B2D2DA9004F9924 /* TopBirdScene.swift in Sources */,
 				4EC69CE219726D340094A23E /* GameScene.swift in Sources */,
 				E935F46E1B2B49EA004F9924 /* MenuScene.swift in Sources */,
 				4EC69CE419726D340094A23E /* GameViewController.swift in Sources */,

@@ -163,6 +163,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate, ADBannerViewDelegate {
     playHighScoreEffect = SKAction.playSoundFileNamed("SFX_Powerup_34.wav", waitForCompletion: true)
     playBackgroundMusic = SKAction.playSoundFileNamed("bossfight.mp3", waitForCompletion: true)
     
+            var alertSound = NSURL(fileURLWithPath: NSBundle.mainBundle().pathForResource("bossfight", ofType: "mp3")!)
+            AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayback, error: nil)
+            AVAudioSession.sharedInstance().setActive(true, error: nil)
+    
+            var error:NSError?
+            audioPlayer = AVAudioPlayer(contentsOfURL: alertSound, error: &error)
+            audioPlayer.numberOfLoops = -1
+            audioPlayer.prepareToPlay()
+            audioPlayer.play()
+    
     state = .FSGameStatePlaying
     
     initWorld()
@@ -273,7 +283,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate, ADBannerViewDelegate {
     
     var timerThomas = NSTimer.scheduledTimerWithTimeInterval(143.0, target: self, selector: Selector("thomasSighting"), userInfo: nil, repeats: true)
     
-    runAction(SKAction.repeatActionForever(playBackgroundMusic))
+    var timerMysterious = NSTimer.scheduledTimerWithTimeInterval(247.0, target: self, selector: Selector("mysteryBirds"), userInfo: nil, repeats: true)
+    
+//    runAction(SKAction.repeatActionForever(playBackgroundMusic))
     
     
 //    var alertSound = NSURL(fileURLWithPath: NSBundle.mainBundle().pathForResource("collectcoin", ofType: "wav")!)
@@ -295,7 +307,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, ADBannerViewDelegate {
         label_score.hidden = false
         //    label_score = SKLabelNode(fontNamed:"MarkerFelt-Wide")
         //    label_score.position = CGPoint(x: CGRectGetMidX(frame), y: CGRectGetMaxY(frame) - 100)
-        label_score.text = "Feel The Rainbow"
+        label_score.text = "Catch The Rainbow"
         //    label_score.zPosition = 701
         //    label_score.hidden = false
         
@@ -311,6 +323,34 @@ class GameScene: SKScene, SKPhysicsContactDelegate, ADBannerViewDelegate {
                 SKAction.runBlock(createRainbow),
                 SKAction.waitForDuration(0.6)
                 ]),count: 1
+            ))
+        
+        
+    }
+    
+    func mysteryBirds() {
+        
+        self.runAction(playHighScoreEffect)
+        // 1
+        label_score.hidden = false
+        //    label_score = SKLabelNode(fontNamed:"MarkerFelt-Wide")
+        //    label_score.position = CGPoint(x: CGRectGetMidX(frame), y: CGRectGetMaxY(frame) - 100)
+        label_score.text = "Pájaros Misteriosos"
+        //    label_score.zPosition = 701
+        //    label_score.hidden = false
+        
+        // Create the actions
+        let actionLength = SKAction.moveTo(CGPoint(x: CGRectGetMidX(frame), y: CGRectGetMaxY(frame) - 100), duration: NSTimeInterval(2.0))
+        let actionMoveDone = SKAction.hide()
+        
+        
+        self.label_score.runAction(SKAction.sequence([actionLength,actionMoveDone]))
+        
+        runAction(SKAction.repeatAction(
+            SKAction.sequence([
+                SKAction.runBlock(createMysteryBird),
+                SKAction.waitForDuration(0.6)
+                ]),count: 24
             ))
         
         
@@ -981,6 +1021,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate, ADBannerViewDelegate {
         removeCoin(secondBody.node as! SKSpriteNode)
         println("GOT MEGA COIN")
         
+        audioPlayer.stop()
+        //                optionView.hidden = false
+        let transition = SKTransition.revealWithDirection(SKTransitionDirection.Down, duration: 0.5)
+        
+        let scene = TopBirdScene(size: self.scene!.size)
+        scene.scaleMode = SKSceneScaleMode.AspectFill
+        
+        //                self.scene!.view!.presentScene(scene, transition: transition)
+        self.scene!.view!.presentScene(scene)
+        
+        
+        
 //        firstBody.applyImpulse(CGVector(dx: 0, dy: 25))
         //        var alertSound = NSURL(fileURLWithPath: NSBundle.mainBundle().pathForResource("collectcoin", ofType: "wav")!)
         //        AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayback, error: nil)
@@ -1097,6 +1149,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, ADBannerViewDelegate {
             if CGRectContainsPoint(optionButton.frame, location) {
                 println("Touched Option")
                 
+                audioPlayer.stop()
 //                optionView.hidden = false
                 let transition = SKTransition.revealWithDirection(SKTransitionDirection.Down, duration: 0.5)
                 
@@ -1484,6 +1537,68 @@ class GameScene: SKScene, SKPhysicsContactDelegate, ADBannerViewDelegate {
         
     }
     
+    func createMysteryBird() {
+        
+        
+        let coin = SKSpriteNode(imageNamed: "bluegreen1")
+        
+        coin.physicsBody = SKPhysicsBody(circleOfRadius: coin.size.width / 2.5)
+        coin.physicsBody?.dynamic = true
+        coin.physicsBody?.categoryBitMask = FSYellowCategory
+        coin.physicsBody?.contactTestBitMask = FSPlayerCategory
+        coin.physicsBody?.collisionBitMask = FSPlayerCategory
+        coin.physicsBody?.affectedByGravity = false
+        coin.zPosition = 100
+        
+        // Determine where to spawn the monster along the Y axis
+        let actualY = random(min:coin.size.height/2, max: size.height - coin.size.height/2)
+        let actualX = random(min:coin.size.width/2, max: size.width - coin.size.width/2)
+        
+        let randomheight = random(min:CGFloat(280.0), max: CGFloat(480.0))
+        // Position the monster slightly off-screen along the right edge,
+        // and along a random position along the Y axis as calculated above
+        coin.position = CGPoint(x: size.width + coin.size.width/2, y: randomheight)
+        //        coin.zRotation = CGFloat(M_PI_2)
+        coin.size = CGSize(width: 30, height: 30)
+        
+        // Add the monster to the scene
+        addChild(coin)
+        
+        // Determine speed of the monster
+        let actualDuration = random(min:CGFloat(6.0), max: CGFloat(10.0))
+        
+        // Create the actions
+        let actionMove = SKAction.moveTo(CGPoint(x: -self.size.width, y: randomheight), duration: NSTimeInterval(actualDuration))
+        let actionMoveDone = SKAction.removeFromParent()
+        let loseAction = SKAction.runBlock() {
+            let reveal = SKTransition.flipHorizontalWithDuration(0.5)
+            //            let gameOverScene = GameOverScene(size: self.size, won: false)
+            //            self.view?.presentScene(gameOverScene, transition: nil)
+        }
+        let oscillate = SKAction.oscillation(amplitude: 8, timePeriod: 2, midPoint: coin.position)
+        //        coin.runAction(SKAction.sequence([oscillate]))
+        coin.runAction(SKAction.repeatActionForever(oscillate))
+        var moveBird = SKAction.moveByX(-self.size.width-30, y: 0, duration: NSTimeInterval(actualDuration))
+        //        var oscillateforever = SKAction.repeatActionForever(oscillate)
+        //        coin.runAction(SKAction.moveByX(-self.size.width-30, y: 0, duration: NSTimeInterval(actualDuration)))
+        coin.runAction(SKAction.sequence([moveBird,actionMoveDone]))
+        
+        let texture1 = SKTexture(imageNamed: "bluegreen1")
+        let texture2 = SKTexture(imageNamed: "bluegreen2")
+        //        let texture3 = SKTexture(imageNamed: "copper3")
+        //        let texture4 = SKTexture(imageNamed: "copper4")
+        //        let texture5 = SKTexture(imageNamed: "copper5")
+        //        let texture6 = SKTexture(imageNamed: "copper6")
+        //        let texture7 = SKTexture(imageNamed: "copper7")
+        let textures = [texture1, texture2]
+        var randomflapspeed = random(min:0.3, max: 0.6)
+        
+        coin.runAction(SKAction.repeatActionForever(SKAction.animateWithTextures(textures, timePerFrame: NSTimeInterval(randomflapspeed))))
+        
+        
+        
+    }
+
     
     
     func createYellowBird() {
