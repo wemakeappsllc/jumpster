@@ -139,6 +139,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, ADBannerViewDelegate {
     let FSFloorCategory: UInt32 = 1 << 8
     let FSRareBirdCategory: UInt32 = 1 << 9
     let FSYellowCategory: UInt32 = 1 << 10
+    let FSTopBirdCategory: UInt32 = 1 << 11
     
     // 1
     enum FSGameState: Int {
@@ -1010,14 +1011,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate, ADBannerViewDelegate {
 //                audioPlayer.play()
         
     }
-    
-    if collision == (FSPlayerCategory | FSImpossibleCoinCategory) {
+    if collision == (FSPlayerCategory | FSTopBirdCategory) {
         
-        totalscore+=65
+        totalscore+=111
         total_score.text = "\(totalscore)"
         
-        score+=65
-//        label_score.text = "\(score)"
+        score+=111
+        //        label_score.text = "\(score)"
         removeCoin(secondBody.node as! SKSpriteNode)
         println("GOT MEGA COIN")
         
@@ -1032,6 +1032,19 @@ class GameScene: SKScene, SKPhysicsContactDelegate, ADBannerViewDelegate {
         self.scene!.view!.presentScene(scene)
         
         
+    }
+    
+    if collision == (FSPlayerCategory | FSImpossibleCoinCategory) {
+        
+        totalscore+=65
+        total_score.text = "\(totalscore)"
+        
+        score+=65
+//        label_score.text = "\(score)"
+        removeCoin(secondBody.node as! SKSpriteNode)
+        println("GOT MEGA COIN")
+        
+
         
 //        firstBody.applyImpulse(CGVector(dx: 0, dy: 25))
         //        var alertSound = NSURL(fileURLWithPath: NSBundle.mainBundle().pathForResource("collectcoin", ofType: "wav")!)
@@ -1918,7 +1931,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, ADBannerViewDelegate {
         
         coin.physicsBody = SKPhysicsBody(circleOfRadius: coin.size.width / 2.5)
         coin.physicsBody?.dynamic = true
-        coin.physicsBody?.categoryBitMask = FSImpossibleCoinCategory
+        coin.physicsBody?.categoryBitMask = FSTopBirdCategory
         coin.physicsBody?.contactTestBitMask = FSPlayerCategory
         coin.physicsBody?.collisionBitMask = FSPlayerCategory
         coin.physicsBody?.affectedByGravity = false
