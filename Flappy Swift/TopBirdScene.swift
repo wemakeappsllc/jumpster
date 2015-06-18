@@ -110,9 +110,9 @@ class TopBirdScene: SKScene, SKPhysicsContactDelegate {
     
     func initMan() {
         
-        manGuy = SKSpriteNode(imageNamed: "man1")
+        manGuy = SKSpriteNode(imageNamed: "kingBig")
         manGuy.position = CGPoint(x: CGRectGetMidX(frame), y: CGRectGetMidY(frame)+100)
-        manGuy.size = CGSize(width: 34*2, height: 44*2)
+        manGuy.size = CGSize(width: 44*2, height: 44*2)
         
 
         manGuy.physicsBody = SKPhysicsBody(circleOfRadius: manGuy.size.width / 2.5)

@@ -30,6 +30,8 @@
 import SpriteKit
 import AVFoundation
 import iAd
+import GameKit
+import StoreKit
 
 // Math Helpers
 
@@ -66,7 +68,7 @@ extension CGFloat {
     }
 }
 
-class GameScene: SKScene, SKPhysicsContactDelegate, ADBannerViewDelegate {
+class GameScene: SKScene, SKPhysicsContactDelegate, ADBannerViewDelegate, EasyGameCenterDelegate, ADInterstitialAdDelegate, SKPaymentTransactionObserver, SKProductsRequestDelegate  {
     
     
     //SOUNDS
@@ -78,9 +80,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate, ADBannerViewDelegate {
     // Ad Banner
     var adBannerView : ADBannerView?
     
+    //Interstitial Ads
+    var interstitialAd:ADInterstitialAd!
+    var interstitialAdView: UIView = UIView()
+    
     // Option Button
     
     var optionButton: SKSpriteNode!
+    var removeAdsButton: SKSpriteNode!
     var optionView: UIView!
     
     
@@ -154,6 +161,27 @@ class GameScene: SKScene, SKPhysicsContactDelegate, ADBannerViewDelegate {
   // MARK: - SKScene Initializacion
   override func didMoveToView(view: SKView) {
     
+    // Set IAPS
+    if(SKPaymentQueue.canMakePayments()) {
+        println("IAP is enabled, loading")
+        var productID:NSSet = NSSet(objects: "removeAds", "bundle id")
+        var request: SKProductsRequest = SKProductsRequest(productIdentifiers: productID as Set<NSObject>)
+        request.delegate = self
+        request.start()
+    } else {
+        println("please enable IAPS")
+    }
+    
+    /*** Set Delegate UIViewController ***/
+    EasyGameCenter.sharedInstance(self)
+    
+    //Set New view controller delegate, that's when you change UIViewController
+    EasyGameCenter.delegate = self
+    
+    /*** If you want not message just delete this ligne ***/
+    EasyGameCenter.debugMode = true
+    
+    
     NSNotificationCenter.defaultCenter().addObserver(
         self,
         selector: "becameActive:",
@@ -180,8 +208,22 @@ class GameScene: SKScene, SKPhysicsContactDelegate, ADBannerViewDelegate {
     
     initBackground()
     
-    initBird()
-
+    if Defaults["currentPlayer"].string == nil || Defaults["currentPlayer"].string == "kingBig" {
+    
+        initBird()
+        
+    } else if Defaults["currentPlayer"].string == "greenguyBig" {
+        
+        initGreenGuy()
+        
+    } else if Defaults["currentPlayer"].string == "babyBig" {
+        
+        initBaby()
+        
+    } else {
+        
+        initBird()
+    }
     
     initHUD()
     
@@ -195,7 +237,27 @@ class GameScene: SKScene, SKPhysicsContactDelegate, ADBannerViewDelegate {
     initOptionButton()
     initOptionMenu()
     
-//    loadAds()
+    //CHECK FOR IAP PURCHASE - IF SO REMOVE BANNER ADS AND DO NOT DISPLAY INTERSTITIALS
+    
+    if Defaults["premium"].string != nil {
+        
+        
+    } else {
+        
+        loadAds()
+        
+        if Defaults["fireInterstitial"].string == "true" {
+            
+                println("Interstitial set to fire")
+                loadInterstitialAd()
+                Defaults["fireInterstitial"] = "false"
+        }
+        
+    }
+    
+    //==================================================================================
+    
+    EasyGameCenter.reportScoreLeaderboard(leaderboardIdentifier: "topbirds", score: 0)
     
     
     runAction(SKAction.repeatActionForever(
@@ -285,6 +347,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate, ADBannerViewDelegate {
     var timerThomas = NSTimer.scheduledTimerWithTimeInterval(143.0, target: self, selector: Selector("thomasSighting"), userInfo: nil, repeats: true)
     
     var timerMysterious = NSTimer.scheduledTimerWithTimeInterval(247.0, target: self, selector: Selector("mysteryBirds"), userInfo: nil, repeats: true)
+    
+
+    
+    //RUN ADS
+    
+//        var timerAd = NSTimer.scheduledTimerWithTimeInterval(5.0, target: self, selector: Selector("loadInterstitialAd"), userInfo: nil, repeats: true)
     
 //    runAction(SKAction.repeatActionForever(playBackgroundMusic))
     
@@ -1021,6 +1089,22 @@ class GameScene: SKScene, SKPhysicsContactDelegate, ADBannerViewDelegate {
         removeCoin(secondBody.node as! SKSpriteNode)
         println("GOT MEGA COIN")
         
+        if Defaults["topScore"].int != nil {
+            var gettopscore = Defaults["topScore"].int
+            var updatedscore = gettopscore!+1
+            
+            EasyGameCenter.reportScoreLeaderboard(leaderboardIdentifier: "topbirds", score: updatedscore)
+            
+            Defaults["topScore"] = gettopscore!+1
+        }
+        else {
+            
+            Defaults["topScore"] = 1
+            EasyGameCenter.reportScoreLeaderboard(leaderboardIdentifier: "topbirds", score: 1)
+        }
+        
+
+        
         audioPlayer.stop()
         //                optionView.hidden = false
         let transition = SKTransition.revealWithDirection(SKTransitionDirection.Down, duration: 0.5)
@@ -1060,10 +1144,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate, ADBannerViewDelegate {
     
     if collision == (FSPlayerCategory | FSRareBirdCategory) {
         
-        totalscore+=5
+        totalscore+=3
         total_score.text = "\(totalscore)"
         
-        score+=5
+        score+=3
         //        label_score.text = "\(score)"
         removeCoin(secondBody.node as! SKSpriteNode)
 
@@ -1105,12 +1189,19 @@ class GameScene: SKScene, SKPhysicsContactDelegate, ADBannerViewDelegate {
     
     func initOptionButton() {
         
-        optionButton = SKSpriteNode(imageNamed: "man1")
+        optionButton = SKSpriteNode(imageNamed: "bigGear")
         optionButton.position = CGPoint(x: CGRectGetMidX(frame) + 140, y: CGRectGetMaxY(frame) - 20)
-        optionButton.size = CGSize(width: 44*0.9, height: 44*0.9)
+        optionButton.size = CGSize(width: 44*0.7, height: 44*0.7)
         
         optionButton.zPosition = 60
         addChild(optionButton)
+        
+        removeAdsButton = SKSpriteNode(imageNamed: "removeAds")
+        removeAdsButton.position = CGPoint(x: CGRectGetMidX(frame) + 75, y: CGRectGetMaxY(frame) - 20)
+        removeAdsButton.size = CGSize(width: 160*0.55, height: 53*0.55)
+        
+        removeAdsButton.zPosition = 60
+        addChild(removeAdsButton)
         
     }
     
@@ -1139,7 +1230,20 @@ class GameScene: SKScene, SKPhysicsContactDelegate, ADBannerViewDelegate {
 //            bird.runAction(SKAction.rotateByAngle(CGFloat(-M_PI*2), duration: 0.5))
 //            jumpcount!++
 //        }
+        for touch: AnyObject in touches {
+            let location = touch.locationInNode(self)
         
+            if CGRectContainsPoint(removeAdsButton.frame, location) || CGRectContainsPoint(optionButton.frame, location)  {
+                
+                
+                println("remove ads pressed")
+//                btnRemoveAds()
+                
+                
+                
+                
+            }else{
+
         if inAir == "true" {
             
             
@@ -1151,7 +1255,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate, ADBannerViewDelegate {
         var timer = NSTimer.scheduledTimerWithTimeInterval(1.0, target: self, selector: Selector("notInAir"), userInfo: nil, repeats: false)
 
         }
+            }
     }
+        
+    }//end state iff
     
   }
     
@@ -1159,8 +1266,21 @@ class GameScene: SKScene, SKPhysicsContactDelegate, ADBannerViewDelegate {
         for touch: AnyObject in touches {
             let location = touch.locationInNode(self)
             
+            if CGRectContainsPoint(removeAdsButton.frame, location) {
+                
+//                bird.physicsBody?.applyImpulse(CGVector(dx: 0, dy: -14))
+
+                println("remove ads pressed")
+                btnRemoveAds()
+                
+                
+                
+                
+            }
+            
             if CGRectContainsPoint(optionButton.frame, location) {
                 println("Touched Option")
+                
                 
                 audioPlayer.stop()
 //                optionView.hidden = false
@@ -1172,11 +1292,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate, ADBannerViewDelegate {
 //                self.scene!.view!.presentScene(scene, transition: transition)
                 self.scene!.view!.presentScene(scene)
                 
+ 
                 
-            } else {
-                
-                println("Nothing here")
             }
+//            } else {
+//                
+//                println("Nothing here")
+//            }
             
         }
     }
@@ -2064,5 +2186,186 @@ class GameScene: SKScene, SKPhysicsContactDelegate, ADBannerViewDelegate {
             adBannerView!.hidden = true
         }
     }
+    //INTERSTITIAL ADS-----------------------------------------------------------------------
+    func loadInterstitialAd() {
+        interstitialAd = ADInterstitialAd()
+        interstitialAd.delegate = self
+    }
+    
+    func interstitialAdWillLoad(interstitialAd: ADInterstitialAd!) {
+        
+    }
+    
+    func interstitialAdDidLoad(interstitialAd: ADInterstitialAd!) {
+        interstitialAdView = UIView()
+        
+        if self.view != nil {
+        interstitialAdView.frame = self.view!.bounds
+        view!.addSubview(interstitialAdView)
+        
+        
+        interstitialAd.presentInView(interstitialAdView)
+        UIViewController.prepareInterstitialAds()
+        }
+    }
+    
+    func interstitialAdActionDidFinish(interstitialAd: ADInterstitialAd!) {
+        interstitialAdView.removeFromSuperview()
+        
+    }
+    
+    func interstitialAdActionShouldBegin(interstitialAd: ADInterstitialAd!, willLeaveApplication willLeave: Bool) -> Bool {
+        return true
+    }
+    func interstitialAd(interstitialAd: ADInterstitialAd!, didFailWithError error: NSError!) {
+        
+    }
+    
+    func interstitialAdDidUnload(interstitialAd: ADInterstitialAd!) {
+        interstitialAdView.removeFromSuperview()
+        
+    }
+    //ALL IAP STUFF=====================================
+    
+    // 2
+    func btnRemoveAds() {
+        for product in list {
+            var prodID = product.productIdentifier
+            if(prodID == "removeAds") {
+                p = product
+                buyProduct()
+                break;
+            }
+        }
+        
+    }
+    // 4
+    func removeAds() {
+        println("ads removed")
+    }
+    
+    // 5
+    func addCoins() {
+        println("added 50 coins")
+    }
+    
+    // 6
+    func RestorePurchases() {
+        SKPaymentQueue.defaultQueue().addTransactionObserver(self)
+        SKPaymentQueue.defaultQueue().restoreCompletedTransactions()
+    }
+    
+    var list = [SKProduct]()
+    var p = SKProduct()
+    
+    // 2
+    func buyProduct() {
+        println("buy " + p.productIdentifier)
+        var pay = SKPayment(product: p)
+        SKPaymentQueue.defaultQueue().addTransactionObserver(self)
+        SKPaymentQueue.defaultQueue().addPayment(pay as SKPayment)
+    }
+    
+    //3
+    func productsRequest(request: SKProductsRequest!, didReceiveResponse response: SKProductsResponse!) {
+        println("product request")
+        var myProduct = response.products
+        
+        for product in myProduct {
+            println("product added")
+            println(product.productIdentifier)
+            println(product.localizedTitle)
+            println(product.localizedDescription)
+            println(product.price)
+            
+            list.append(product as! SKProduct)
+        }
+    }
+    
+    // 4
+    func paymentQueueRestoreCompletedTransactionsFinished(queue: SKPaymentQueue!) {
+        println("transactions restored")
+        
+        var purchasedItemIDS = []
+        for transaction in queue.transactions {
+            var t: SKPaymentTransaction = transaction as! SKPaymentTransaction
+            
+            let prodID = t.payment.productIdentifier as String
+            
+            switch prodID {
+            case "removeAds":
+                println("remove ads")
+                removeAds()
+            case "bundleid":
+                println("add coins to account")
+                addCoins()
+            default:
+                println("IAP not setup")
+            }
+            
+        }
+    }
+    
+    // 5
+    func paymentQueue(queue: SKPaymentQueue!, updatedTransactions transactions: [AnyObject]!) {
+        println("add paymnet")
+        
+        for transaction:AnyObject in transactions {
+            var trans = transaction as! SKPaymentTransaction
+            println(trans.error)
+            
+            switch trans.transactionState {
+                
+            case .Purchased:
+                println("buy, ok unlock iap here")
+                println(p.productIdentifier)
+                //SET PREMIUM STATUS AND REMOVE ADS+IAP BUTTON
+                Defaults["premium"] = "true"
+                if adBannerView != nil {
+                    
+                    adBannerView?.hidden = true
+                    adBannerView = nil
+                }
+                removeAdsButton.hidden = true
+                //============================================
+                //If more IAPS can use switch
+                let prodID = p.productIdentifier as String
+                switch prodID {
+                case "bundle id":
+                    println("remove ads")
+                    removeAds()
+                case "bundle id":
+                    println("add coins to account")
+                    addCoins()
+                default:
+                    println("IAP not setup")
+                }
+                
+                queue.finishTransaction(trans)
+                break;
+            case .Failed:
+                println("buy error")
+                queue.finishTransaction(trans)
+                break;
+            default:
+                println("default")
+                break;
+                
+            }
+        }
+    }
+    
+    // 6
+    func finishTransaction(trans:SKPaymentTransaction)
+    {
+        println("finish trans")
+    }
+    
+    //7
+    func paymentQueue(queue: SKPaymentQueue!, removedTransactions transactions: [AnyObject]!)
+    {
+        println("remove trans");
+    }
+
 
 }

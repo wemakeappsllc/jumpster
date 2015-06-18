@@ -28,17 +28,37 @@
 
 import UIKit
 import SpriteKit
+import GameKit
+import iAd
 
-class GameViewController: UIViewController {
+class GameViewController: UIViewController, EasyGameCenterDelegate, GKGameCenterControllerDelegate,ADInterstitialAdDelegate {
     
   @IBOutlet var skView: SKView!
+    var scene:GameScene!
+    var interstitialAd:ADInterstitialAd!
+    var interstitialAdView: UIView = UIView()
 
   override func viewDidLoad() {
     super.viewDidLoad()
+    
+    /*** Set Delegate UIViewController ***/
+    EasyGameCenter.sharedInstance(self)
+    
+    //Set New view controller delegate, that's when you change UIViewController
+    EasyGameCenter.delegate = self
+    
+    /*** If you want not message just delete this ligne ***/
+    EasyGameCenter.debugMode = true
+    
+    
+
 
 //    skView.showsFPS = true
 //    skView.showsNodeCount = true
 //    skView.showsPhysics   = true
+    
+    var gameCenter = GKGameCenterViewController()
+    gameCenter.gameCenterDelegate = self
     
     if skView.scene == nil {
       let scene = GameScene(size: skView.bounds.size)
@@ -49,6 +69,17 @@ class GameViewController: UIViewController {
   override func shouldAutorotate() -> Bool {
     return true
   }
+    
+
+    func openGameCenter() {
+        var gameCenter = GKGameCenterViewController()
+        gameCenter.gameCenterDelegate = self
+        self.presentViewController(gameCenter, animated: true, completion: nil)
+    }
+    
+  func gameCenterViewControllerDidFinish(gameCenterViewController: GKGameCenterViewController!) {
+        gameCenterViewController.dismissViewControllerAnimated(true, completion: nil)
+    }
 
   override func supportedInterfaceOrientations() -> Int {
     if UIDevice.currentDevice().userInterfaceIdiom == .Phone {
@@ -65,4 +96,40 @@ class GameViewController: UIViewController {
   override func prefersStatusBarHidden() -> Bool {
     return true
   }
+    
+    //INTERSTITIAL ADS-----------------------------------------------------------------------
+    func loadInterstitialAd() {
+        interstitialAd = ADInterstitialAd()
+        interstitialAd.delegate = self
+    }
+    
+    func interstitialAdWillLoad(interstitialAd: ADInterstitialAd!) {
+        
+    }
+    
+    func interstitialAdDidLoad(interstitialAd: ADInterstitialAd!) {
+        interstitialAdView = UIView()
+        interstitialAdView.frame = self.view.bounds
+        view.addSubview(interstitialAdView)
+        
+        interstitialAd.presentInView(interstitialAdView)
+        UIViewController.prepareInterstitialAds()
+    }
+    
+    func interstitialAdActionDidFinish(interstitialAd: ADInterstitialAd!) {
+        interstitialAdView.removeFromSuperview()
+
+    }
+    
+    func interstitialAdActionShouldBegin(interstitialAd: ADInterstitialAd!, willLeaveApplication willLeave: Bool) -> Bool {
+        return true
+    }
+    func interstitialAd(interstitialAd: ADInterstitialAd!, didFailWithError error: NSError!) {
+        
+    }
+    
+    func interstitialAdDidUnload(interstitialAd: ADInterstitialAd!) {
+        interstitialAdView.removeFromSuperview()
+
+    }
 }

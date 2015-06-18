@@ -30,6 +30,9 @@
 		E97C45461B28DCC700AA50F1 /* iAd.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E97C45451B28DCC700AA50F1 /* iAd.framework */; };
 		E99E88AB1B2D49C10064EE51 /* win.wav in Resources */ = {isa = PBXBuildFile; fileRef = E99E88A91B2D49C10064EE51 /* win.wav */; };
 		E99E88AC1B2D49C10064EE51 /* hit01.wav in Resources */ = {isa = PBXBuildFile; fileRef = E99E88AA1B2D49C10064EE51 /* hit01.wav */; };
+		E99E88AE1B2DFBB40064EE51 /* EasyGameCenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = E99E88AD1B2DFBB40064EE51 /* EasyGameCenter.swift */; };
+		E99E88B01B2DFBD60064EE51 /* GameKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E99E88AF1B2DFBD60064EE51 /* GameKit.framework */; };
+		E99E88B21B2DFBE80064EE51 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E99E88B11B2DFBE80064EE51 /* SystemConfiguration.framework */; };
 		E9AC1D4E1B25164500F2468B /* man1@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = E9AC1D4A1B25164500F2468B /* man1@2x.png */; };
 		E9AC1D4F1B25164500F2468B /* man2@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = E9AC1D4B1B25164500F2468B /* man2@2x.png */; };
 		E9AC1D501B25164500F2468B /* man3@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = E9AC1D4C1B25164500F2468B /* man3@2x.png */; };
@@ -78,6 +81,9 @@
 		E97C45451B28DCC700AA50F1 /* iAd.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = iAd.framework; path = System/Library/Frameworks/iAd.framework; sourceTree = SDKROOT; };
 		E99E88A91B2D49C10064EE51 /* win.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = win.wav; sourceTree = "<group>"; };
 		E99E88AA1B2D49C10064EE51 /* hit01.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = hit01.wav; sourceTree = "<group>"; };
+		E99E88AD1B2DFBB40064EE51 /* EasyGameCenter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EasyGameCenter.swift; sourceTree = "<group>"; };
+		E99E88AF1B2DFBD60064EE51 /* GameKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameKit.framework; path = System/Library/Frameworks/GameKit.framework; sourceTree = SDKROOT; };
+		E99E88B11B2DFBE80064EE51 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		E9AC1D4A1B25164500F2468B /* man1@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "man1@2x.png"; sourceTree = "<group>"; };
 		E9AC1D4B1B25164500F2468B /* man2@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "man2@2x.png"; sourceTree = "<group>"; };
 		E9AC1D4C1B25164500F2468B /* man3@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "man3@2x.png"; path = "Flappy Swift/images/man3@2x.png"; sourceTree = SOURCE_ROOT; };
@@ -93,6 +99,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E99E88B21B2DFBE80064EE51 /* SystemConfiguration.framework in Frameworks */,
+				E99E88B01B2DFBD60064EE51 /* GameKit.framework in Frameworks */,
 				E97C45461B28DCC700AA50F1 /* iAd.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -110,6 +118,8 @@
 		4EC69CCF19726D340094A23E = {
 			isa = PBXGroup;
 			children = (
+				E99E88B11B2DFBE80064EE51 /* SystemConfiguration.framework */,
+				E99E88AF1B2DFBD60064EE51 /* GameKit.framework */,
 				E97C45451B28DCC700AA50F1 /* iAd.framework */,
 				4EC69CDA19726D340094A23E /* Flappy Swift */,
 				4EC69CF119726D350094A23E /* Flappy SwiftTests */,
@@ -134,6 +144,7 @@
 				E9C288241B2953DC003AD446 /* SwiftyUserDefaults.swift */,
 				E935F46D1B2B49EA004F9924 /* MenuScene.swift */,
 				E935F46F1B2D2DA9004F9924 /* TopBirdScene.swift */,
+				E99E88AD1B2DFBB40064EE51 /* EasyGameCenter.swift */,
 				4EC69CE119726D340094A23E /* GameScene.swift */,
 				4EC69CE319726D340094A23E /* GameViewController.swift */,
 				E99E88A91B2D49C10064EE51 /* win.wav */,
@@ -322,6 +333,7 @@
 				E935F46E1B2B49EA004F9924 /* MenuScene.swift in Sources */,
 				4EC69CE419726D340094A23E /* GameViewController.swift in Sources */,
 				4EC69CDE19726D340094A23E /* AppDelegate.swift in Sources */,
+				E99E88AE1B2DFBB40064EE51 /* EasyGameCenter.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -438,6 +450,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				INFOPLIST_FILE = "Flappy Swift/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -449,6 +462,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				INFOPLIST_FILE = "Flappy Swift/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};

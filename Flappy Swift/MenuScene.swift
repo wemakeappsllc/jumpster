@@ -7,8 +7,10 @@
 //
 
 import SpriteKit
+import GameKit
+import StoreKit
 
-class MenuScene: SKScene {
+class MenuScene: SKScene, EasyGameCenterDelegate, GKGameCenterControllerDelegate, SKPaymentTransactionObserver, SKProductsRequestDelegate {
     
     enum Zone {
         case Left, Center, Right
@@ -37,6 +39,14 @@ class MenuScene: SKScene {
     // Background
     var background: SKNode!
     let background_speed = 100.0
+    var label_score : SKLabelNode!
+    var exitButton: SKSpriteNode!
+    var removeAdsButton: SKSpriteNode!
+    
+    var swipeLabel : SKLabelNode!
+    var tapToSelectLabel : SKLabelNode!
+    
+    var testString: String?
     
     // Initialization
     
@@ -51,14 +61,67 @@ class MenuScene: SKScene {
         super.init(coder: aDecoder)
     }
     
+    
     override func didMoveToView(view: SKView) {
+        
+        
+        // Set IAPS
+        if(SKPaymentQueue.canMakePayments()) {
+            println("IAP is enabled, loading")
+            var productID:NSSet = NSSet(objects: "removeAds", "bundle id")
+            var request: SKProductsRequest = SKProductsRequest(productIdentifiers: productID as Set<NSObject>)
+            request.delegate = self
+            request.start()
+        } else {
+            println("please enable IAPS")
+        }
+
+        /*** Set Delegate UIViewController ***/
+        EasyGameCenter.sharedInstance(self)
+        
+        //Set New view controller delegate, that's when you change UIViewController
+        EasyGameCenter.delegate = self
+        
+        /*** If you want not message just delete this ligne ***/
+        EasyGameCenter.debugMode = true
+        
+        
         placePlayersOnPositions()
         calculateZIndexesForPlayers()
         initBackground()
+        initLeaderBoardButton()
+        initExitButton()
+        
+        if Defaults["premium"].string != nil {
+            
+        }else{
+        initRemoveAdsButton()
+        }
     }
     
     // MARK: - Background Functions
     func initBackground() {
+        
+        
+        // 1
+        tapToSelectLabel = SKLabelNode(fontNamed:"MarkerFelt-Wide")
+        tapToSelectLabel.position = CGPoint(x: CGRectGetMidX(frame), y: CGRectGetMaxY(frame) - 210)
+        tapToSelectLabel.text = "Tap to Select"
+        tapToSelectLabel.zPosition = 801
+        tapToSelectLabel.name = "taptoselect"
+        tapToSelectLabel.fontSize = 40/3
+        addChild(tapToSelectLabel)
+        
+        
+        // 1
+        swipeLabel = SKLabelNode(fontNamed:"MarkerFelt-Wide")
+        swipeLabel.position = CGPoint(x: CGRectGetMidX(frame), y: CGRectGetMaxY(frame) - 370)
+        swipeLabel.text = "<< Swipe >>"
+        swipeLabel.zPosition = 801
+        swipeLabel.name = "swipeLabel"
+        swipeLabel.fontSize = 40/3
+        addChild(swipeLabel)
+        
         
         // 1
         background = SKNode()
@@ -76,9 +139,54 @@ class MenuScene: SKScene {
         
     }
     
+    func initRemoveAdsButton() {
+        
+        
+        removeAdsButton = SKSpriteNode(imageNamed: "unlockAdsBigBanner")
+        removeAdsButton.position = CGPoint(x: CGRectGetMidX(frame), y: CGRectGetMaxY(frame) - 440)
+        removeAdsButton.size = CGSize(width: 573*0.5, height: 154*0.5)
+        
+        removeAdsButton.zPosition = 60
+        addChild(removeAdsButton)
+        
+        
+    }
+    
+    func initExitButton() {
+        
+        
+        exitButton = SKSpriteNode(imageNamed: "closeButton")
+        exitButton.position = CGPoint(x: CGRectGetMidX(frame) + 140, y: CGRectGetMaxY(frame) - 20)
+        exitButton.size = CGSize(width: 44*0.7, height: 44*0.7)
+        
+        exitButton.zPosition = 60
+        addChild(exitButton)
+        
+        
+    }
+    
+    func initLeaderBoardButton() {
+        
+        // 1
+        label_score = SKLabelNode(fontNamed:"MarkerFelt-Wide")
+        label_score.position = CGPoint(x: CGRectGetMidX(frame), y: CGRectGetMaxY(frame) - 100)
+        label_score.text = "Leaderboards"
+        label_score.zPosition = 801
+        label_score.name = "leaderboards"
+        addChild(label_score)
+        
+    }
+    func gameCenterViewControllerDidFinish(gameCenterViewController: GKGameCenterViewController!) {
+        gameCenterViewController.dismissViewControllerAnimated(true, completion: nil)
+    }
+    
     func createPlayers() {
         
-        let characters = ["baby1","greenguy1","man1"]
+
+        
+        if Defaults["premium"].string != nil {
+        
+        let characters = ["babyBig","kingBig","greenguyBig"]
         
         for i in 0..<3 {
             
@@ -89,6 +197,22 @@ class MenuScene: SKScene {
             
             players.append(player)
             
+            
+        }
+        }else{
+            
+            let characters = ["hiddenBaby","kingBig","hiddenGreen"]
+            
+            for i in 0..<3 {
+                
+                var names = ["King","Baby","Bird Lover"]
+                let player = SKSpriteNode(imageNamed: characters[i])
+                player.size = CGSizeMake(100, 100)
+                player.name = characters[i]
+                
+                players.append(player)
+            
+            }
         }
     }
     
@@ -226,20 +350,83 @@ class MenuScene: SKScene {
 
         textureCompare = SKSpriteNode(imageNamed: "man1")
             
-        if CGRectContainsPoint(self.centerPlayer!.frame, location) {
-           println( self.centerPlayer?.name )
+            if CGRectContainsPoint(removeAdsButton.frame, location) {
+                println("Remove Ads Pressed")
+                
+                
+
+               
+                btnRemoveAds()
+                
+
+                
+            }
+
             
             
-            if self.centerPlayer!.name == "man1" {
-                println("MAN BABY")
+            if CGRectContainsPoint(exitButton.frame, location) {
+                println("Touched Option")
+                
+                Defaults["fireInterstitial"] = "true"
+                
+                //                optionView.hidden = false
+                let transition = SKTransition.revealWithDirection(SKTransitionDirection.Down, duration: 0.5)
+                
+                let scene = GameScene(size: self.scene!.size)
+                scene.scaleMode = SKSceneScaleMode.AspectFill
+                
+                //                self.scene!.view!.presentScene(scene, transition: transition)
+                self.scene!.view!.presentScene(scene)
+                
+                
+            } 
+
+            
+        if CGRectContainsPoint(self.label_score!.frame, location) {
+            
+            
+            var vc = self.view?.window?.rootViewController
+            var gc = GKGameCenterViewController()
+            gc.gameCenterDelegate = self
+            vc?.presentViewController(gc, animated: true, completion: nil)
+            
             }
             
-            //            let transition = SKTransition.revealWithDirection(SKTransitionDirection.Up, duration: 0.5)
-            let scene = GameScene(size: self.scene!.size)
-            scene.scaleMode = SKSceneScaleMode.AspectFill
+        if CGRectContainsPoint(self.centerPlayer!.frame, location) {
             
-            //            self.scene!.view!.presentScene(scene, transition: transition)
-            self.scene!.view!.presentScene(scene)
+            
+            if self.centerPlayer!.name == "kingBig" || self.centerPlayer!.name == "greenguyBig" || self.centerPlayer!.name == "babyBig" {
+                
+                println(self.centerPlayer!.name)
+                
+                Defaults["fireInterstitial"] = "true"
+                
+                Defaults["currentPlayer"] = self.centerPlayer!.name
+                
+                let scene = GameScene(size: self.scene!.size)
+                scene.scaleMode = SKSceneScaleMode.AspectFill
+                
+                //            self.scene!.view!.presentScene(scene, transition: transition)
+                self.scene!.view!.presentScene(scene)
+              
+                
+            }else {
+                
+                println(self.centerPlayer!.name)
+                
+            }
+            
+//            if self.centerPlayer!.name != "hiddenBaby" || self.centerPlayer!.name != "hiddenGreen" {
+//                
+//                println(self.centerPlayer!.name)
+//                
+//            }
+            //            let transition = SKTransition.revealWithDirection(SKTransitionDirection.Up, duration: 0.5)
+//            let scene = GameScene(size: self.scene!.size)
+//            scene.scaleMode = SKSceneScaleMode.AspectFill
+//            
+//            //            self.scene!.view!.presentScene(scene, transition: transition)
+//            self.scene!.view!.presentScene(scene)
             
             }
         
@@ -333,6 +520,145 @@ class MenuScene: SKScene {
         
         calculateZIndexesForPlayers()
         }
+    }
+    
+    //ALL IAP STUFF=====================================
+    
+    // 2
+    func btnRemoveAds() {
+        for product in list {
+            var prodID = product.productIdentifier
+            if(prodID == "removeAds") {
+                p = product
+                buyProduct()
+                break;
+            }
+        }
+        
+    }
+    // 4
+    func removeAds() {
+        println("ads removed")
+    }
+    
+    // 5
+    func addCoins() {
+        println("added 50 coins")
+    }
+    
+    // 6
+    func RestorePurchases() {
+        SKPaymentQueue.defaultQueue().addTransactionObserver(self)
+        SKPaymentQueue.defaultQueue().restoreCompletedTransactions()
+    }
+    
+    var list = [SKProduct]()
+    var p = SKProduct()
+    
+    // 2
+    func buyProduct() {
+        println("buy " + p.productIdentifier)
+        var pay = SKPayment(product: p)
+        SKPaymentQueue.defaultQueue().addTransactionObserver(self)
+        SKPaymentQueue.defaultQueue().addPayment(pay as SKPayment)
+    }
+    
+    //3
+    func productsRequest(request: SKProductsRequest!, didReceiveResponse response: SKProductsResponse!) {
+        println("product request")
+        var myProduct = response.products
+        
+        for product in myProduct {
+            println("product added")
+            println(product.productIdentifier)
+            println(product.localizedTitle)
+            println(product.localizedDescription)
+            println(product.price)
+            
+            list.append(product as! SKProduct)
+        }
+    }
+    
+    // 4
+    func paymentQueueRestoreCompletedTransactionsFinished(queue: SKPaymentQueue!) {
+        println("transactions restored")
+        
+        var purchasedItemIDS = []
+        for transaction in queue.transactions {
+            var t: SKPaymentTransaction = transaction as! SKPaymentTransaction
+            
+            let prodID = t.payment.productIdentifier as String
+            
+            switch prodID {
+            case "removeAds":
+                println("remove ads")
+                removeAds()
+            case "bundleid":
+                println("add coins to account")
+                addCoins()
+            default:
+                println("IAP not setup")
+            }
+            
+        }
+    }
+    
+    // 5
+    func paymentQueue(queue: SKPaymentQueue!, updatedTransactions transactions: [AnyObject]!) {
+        println("add paymnet")
+        
+        for transaction:AnyObject in transactions {
+            var trans = transaction as! SKPaymentTransaction
+            println(trans.error)
+            
+            switch trans.transactionState {
+                
+            case .Purchased:
+                println("buy, ok unlock iap here")
+                println(p.productIdentifier)
+                Defaults["premium"] = "true"
+                //TRANSITION SCENE AFTER PURCHASE
+                let scene = GameScene(size: self.scene!.size)
+                scene.scaleMode = SKSceneScaleMode.AspectFill
+                self.scene!.view!.presentScene(scene)
+                //===============================
+                
+                let prodID = p.productIdentifier as String
+                switch prodID {
+                case "bundle id":
+                    println("remove ads")
+                    removeAds()
+                case "bundle id":
+                    println("add coins to account")
+                    addCoins()
+                default:
+                    println("IAP not setup")
+                }
+                
+                queue.finishTransaction(trans)
+                break;
+            case .Failed:
+                println("buy error")
+                queue.finishTransaction(trans)
+                break;
+            default:
+                println("default")
+                break;
+                
+            }
+        }
+    }
+    
+    // 6
+    func finishTransaction(trans:SKPaymentTransaction)
+    {
+        println("finish trans")
+    }
+    
+    //7
+    func paymentQueue(queue: SKPaymentQueue!, removedTransactions transactions: [AnyObject]!)
+    {
+        println("remove trans");
     }
     
 }
