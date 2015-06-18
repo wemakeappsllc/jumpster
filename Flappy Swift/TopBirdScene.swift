@@ -81,9 +81,20 @@ class TopBirdScene: SKScene, SKPhysicsContactDelegate {
         initBackground()
         initMan()
         initTopBird()
+        //Timers
         var youTimer = NSTimer.scheduledTimerWithTimeInterval(3.5, target: self, selector: Selector("You"), userInfo: nil, repeats: false)
         var gotTimer = NSTimer.scheduledTimerWithTimeInterval(4.5, target: self, selector: Selector("Got"), userInfo: nil, repeats: false)
         var birdTimer = NSTimer.scheduledTimerWithTimeInterval(5.5, target: self, selector: Selector("Bird"), userInfo: nil, repeats: false)
+        var showButtonsAndAchievementTimer = NSTimer.scheduledTimerWithTimeInterval(6.5, target: self, selector: Selector("showAchievement"), userInfo: nil, repeats: false)
+    }
+    
+    func showAchievement() {
+        
+        EasyGameCenter.reportAchievement(progress: 100.00, achievementIdentifier: "70001229")
+        //Now Show Back Button and Share Button
+        
+        
+        
     }
     
     // MARK: - Background Functions

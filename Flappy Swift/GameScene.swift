@@ -161,6 +161,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, ADBannerViewDelegate, EasyGa
   // MARK: - SKScene Initializacion
   override func didMoveToView(view: SKView) {
     
+    
     // Set IAPS
     if(SKPaymentQueue.canMakePayments()) {
         println("IAP is enabled, loading")
@@ -1081,13 +1082,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate, ADBannerViewDelegate, EasyGa
     }
     if collision == (FSPlayerCategory | FSTopBirdCategory) {
         
-        totalscore+=111
+        totalscore+=127
         total_score.text = "\(totalscore)"
         
-        score+=111
+        score+=127
         //        label_score.text = "\(score)"
         removeCoin(secondBody.node as! SKSpriteNode)
         println("GOT MEGA COIN")
+        
+        EasyGameCenter.reportScoreLeaderboard(leaderboardIdentifier: "highscore", score: totalscore)
         
         if Defaults["topScore"].int != nil {
             var gettopscore = Defaults["topScore"].int
@@ -1256,9 +1259,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate, ADBannerViewDelegate, EasyGa
 
         }
             }
-    }
+    }//End For
         
-    }//end state iff
+    }//end state iff state
     
   }
     
