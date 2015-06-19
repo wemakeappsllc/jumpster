@@ -162,6 +162,22 @@ class GameScene: SKScene, SKPhysicsContactDelegate, ADBannerViewDelegate, EasyGa
   override func didMoveToView(view: SKView) {
     
     
+    //test for retesting iaps
+//    Defaults.removeObjectForKey("premium")
+    
+    //set High score to defaults
+    
+    if Defaults["setHighScore"].int != nil {
+        
+        highscore = Defaults["setHighScore"].int!
+        
+    }else{
+        
+        Defaults["setHighScore"] = 0
+        
+    }
+    
+    
     // Set IAPS
     if(SKPaymentQueue.canMakePayments()) {
         println("IAP is enabled, loading")
@@ -189,9 +205,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate, ADBannerViewDelegate, EasyGa
         name: UIApplicationDidBecomeActiveNotification,
         object: nil)
     
-    playSoundEffect = SKAction.playSoundFileNamed("SFX_Powerup_49.wav", waitForCompletion: false)
-    playHighScoreEffect = SKAction.playSoundFileNamed("SFX_Powerup_34.wav", waitForCompletion: true)
-    playBackgroundMusic = SKAction.playSoundFileNamed("bossfight.mp3", waitForCompletion: true)
+    
+//    playSoundEffect = SKAction.playSoundFileNamed("SFX_Powerup_49.wav", waitForCompletion: false)
+//    playHighScoreEffect = SKAction.playSoundFileNamed("SFX_Powerup_34.wav", waitForCompletion: true)
+//    playBackgroundMusic = SKAction.playSoundFileNamed("bossfight.mp3", waitForCompletion: true)
+    
+    if Defaults["sound"].string == nil || Defaults["sound"].string == "on" {
+        
+        playSoundEffect = SKAction.playSoundFileNamed("SFX_Powerup_49.wav", waitForCompletion: false)
+        playHighScoreEffect = SKAction.playSoundFileNamed("SFX_Powerup_34.wav", waitForCompletion: true)
+        playBackgroundMusic = SKAction.playSoundFileNamed("bossfight.mp3", waitForCompletion: true)
     
             var alertSound = NSURL(fileURLWithPath: NSBundle.mainBundle().pathForResource("bossfight", ofType: "mp3")!)
             AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayback, error: nil)
@@ -202,6 +225,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate, ADBannerViewDelegate, EasyGa
             audioPlayer.numberOfLoops = -1
             audioPlayer.prepareToPlay()
             audioPlayer.play()
+    }else{
+        
+        playSoundEffect = SKAction.removeFromParent()
+        playHighScoreEffect = SKAction.removeFromParent()
+        playBackgroundMusic = SKAction.removeFromParent()
+        
+    }
     
     state = .FSGameStatePlaying
     
@@ -242,6 +272,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate, ADBannerViewDelegate, EasyGa
     
     if Defaults["premium"].string != nil {
         
+        if adBannerView != nil {
+            adBannerView?.hidden = true
+            adBannerView = nil
+        }
+        
+        if removeAdsButton != nil {
+            
+            removeAdsButton.hidden = true
+        }
         
     } else {
         
@@ -867,7 +906,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate, ADBannerViewDelegate, EasyGa
         // 1
         high_score = SKLabelNode(fontNamed:"MarkerFelt-Wide")
         high_score.position = CGPoint(x: CGRectGetMidX(frame), y: CGRectGetMaxY(frame) - 32)
-        high_score.text = "0"
+        
+        if Defaults["setHighScore"].int != nil {
+            high_score.text = String(Defaults["setHighScore"].int!)
+        }else {
+            high_score.text = "0"
+        }
         high_score.zPosition = 50
         addChild(high_score)
         
@@ -1090,7 +1134,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate, ADBannerViewDelegate, EasyGa
         removeCoin(secondBody.node as! SKSpriteNode)
         println("GOT MEGA COIN")
         
-        EasyGameCenter.reportScoreLeaderboard(leaderboardIdentifier: "highscore", score: totalscore)
+        if highscore < score && score != 0 {
+            
+            highscore = score
+            high_score.text = "\(score)"
+//            self.runAction(playHighScoreEffect)
+            Defaults["setHighScore"] = highscore
+            
+            EasyGameCenter.reportScoreLeaderboard(leaderboardIdentifier: "highscore", score: highscore)
+            
+        }
+        
         
         if Defaults["topScore"].int != nil {
             var gettopscore = Defaults["topScore"].int
@@ -1161,6 +1215,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate, ADBannerViewDelegate, EasyGa
     if collision == (FSPlayerCategory | FSFloorCategory) {
         
         jumpcount = 0
+        if totalscore != 0 {
+        EasyGameCenter.reportScoreLeaderboard(leaderboardIdentifier: "totalbirds", score: totalscore)
+        }
        
         println("hit floor")
         if highscore < score && score != 0 {
@@ -1168,6 +1225,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate, ADBannerViewDelegate, EasyGa
             highscore = score
             high_score.text = "\(score)"
             self.runAction(playHighScoreEffect)
+            Defaults["setHighScore"] = highscore
+            
+            EasyGameCenter.reportScoreLeaderboard(leaderboardIdentifier: "highscore", score: highscore)
+
             displayHighScore()
         }
         println("hitground")
@@ -1227,39 +1288,39 @@ class GameScene: SKScene, SKPhysicsContactDelegate, ADBannerViewDelegate, EasyGa
         // 2
     else if state == .FSGameStatePlaying {
         
-//        if jumpcount < 2 {
-//            
-//            bird.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 14))
-//            bird.runAction(SKAction.rotateByAngle(CGFloat(-M_PI*2), duration: 0.5))
-//            jumpcount!++
-//        }
-        for touch: AnyObject in touches {
-            let location = touch.locationInNode(self)
-        
-            if CGRectContainsPoint(removeAdsButton.frame, location) || CGRectContainsPoint(optionButton.frame, location)  {
-                
-                
-                println("remove ads pressed")
-//                btnRemoveAds()
-                
-                
-                
-                
-            }else{
-
-        if inAir == "true" {
+        if jumpcount < 2 {
             
-            
-            
-        }else {
-            inAir = "true"
-           bird.runAction(SKAction.rotateByAngle(CGFloat(-M_PI*2), duration: 0.5))
-        bird.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 14))
-        var timer = NSTimer.scheduledTimerWithTimeInterval(1.0, target: self, selector: Selector("notInAir"), userInfo: nil, repeats: false)
-
+            bird.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 14))
+            bird.runAction(SKAction.rotateByAngle(CGFloat(-M_PI*2), duration: 0.5))
+            jumpcount!++
         }
-            }
-    }//End For
+//        for touch: AnyObject in touches {
+//            let location = touch.locationInNode(self)
+//        
+//            if CGRectContainsPoint(removeAdsButton.frame, location) || CGRectContainsPoint(optionButton.frame, location)  {
+//                
+//                
+//                println("remove ads pressed")
+////                btnRemoveAds()
+//                
+//                
+//                
+//                
+//            }else{
+//
+//        if inAir == "true" {
+//            
+//            
+//            
+//        }else {
+//            inAir = "true"
+//           bird.runAction(SKAction.rotateByAngle(CGFloat(-M_PI*2), duration: 0.5))
+//        bird.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 14))
+//        var timer = NSTimer.scheduledTimerWithTimeInterval(1.0, target: self, selector: Selector("notInAir"), userInfo: nil, repeats: false)
+//
+//        }
+//            }
+//    }//End For
         
     }//end state iff state
     
@@ -1284,8 +1345,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate, ADBannerViewDelegate, EasyGa
             if CGRectContainsPoint(optionButton.frame, location) {
                 println("Touched Option")
                 
-                
+                if audioPlayer != nil {
                 audioPlayer.stop()
+                }
 //                optionView.hidden = false
                 let transition = SKTransition.revealWithDirection(SKTransitionDirection.Down, duration: 0.5)
                 
@@ -2245,6 +2307,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate, ADBannerViewDelegate, EasyGa
     // 4
     func removeAds() {
         println("ads removed")
+        Defaults["premium"] = "true"
+        if adBannerView != nil {
+            
+            adBannerView?.hidden = true
+            adBannerView = nil
+        }
+        removeAdsButton.hidden = true
     }
     
     // 5

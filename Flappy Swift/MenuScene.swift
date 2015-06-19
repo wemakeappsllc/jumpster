@@ -42,6 +42,7 @@ class MenuScene: SKScene, EasyGameCenterDelegate, GKGameCenterControllerDelegate
     var label_score : SKLabelNode!
     var exitButton: SKSpriteNode!
     var removeAdsButton: SKSpriteNode!
+    var soundButton: SKSpriteNode!
     
     var swipeLabel : SKLabelNode!
     var tapToSelectLabel : SKLabelNode!
@@ -92,6 +93,8 @@ class MenuScene: SKScene, EasyGameCenterDelegate, GKGameCenterControllerDelegate
         initLeaderBoardButton()
         initExitButton()
         
+        initSoundButton()
+        
         if Defaults["premium"].string != nil {
             
         }else{
@@ -99,6 +102,29 @@ class MenuScene: SKScene, EasyGameCenterDelegate, GKGameCenterControllerDelegate
         }
     }
     
+    func initSoundButton() {
+    
+        if Defaults["sound"].string == nil || Defaults["sound"].string == "on" {
+            
+            soundButton = SKSpriteNode(imageNamed: "soundOn")
+            soundButton.position = CGPoint(x: CGRectGetMidX(frame)-140, y: CGRectGetMaxY(frame) - 20)
+            soundButton.size = CGSize(width: 44*0.6, height: 44*0.6)
+        
+            soundButton.zPosition = 60
+            addChild(soundButton)
+            
+        }else {
+            
+            soundButton = SKSpriteNode(imageNamed: "soundOff")
+            soundButton.position = CGPoint(x: CGRectGetMidX(frame)-140, y: CGRectGetMaxY(frame) - 20)
+            soundButton.size = CGSize(width: 44*0.6, height: 44*0.6)
+            
+            soundButton.zPosition = 60
+            addChild(soundButton)
+            
+        }
+    
+    }
     // MARK: - Background Functions
     func initBackground() {
         
@@ -350,19 +376,21 @@ class MenuScene: SKScene, EasyGameCenterDelegate, GKGameCenterControllerDelegate
 
         textureCompare = SKSpriteNode(imageNamed: "man1")
             
+            if removeAdsButton != nil {
+            
             if CGRectContainsPoint(removeAdsButton.frame, location) {
                 println("Remove Ads Pressed")
                 
                 
 
-               
+                removeAdsButton.hidden = true
                 btnRemoveAds()
                 
 
                 
             }
 
-            
+            }
             
             if CGRectContainsPoint(exitButton.frame, location) {
                 println("Touched Option")
@@ -473,6 +501,47 @@ class MenuScene: SKScene, EasyGameCenterDelegate, GKGameCenterControllerDelegate
         for touch: AnyObject in touches {
 //        let touch = touches.anyObject() as! UITouch
         let duration = 0.25
+            
+            let location = touch.locationInNode(self)
+            
+            
+
+                
+                if CGRectContainsPoint(soundButton.frame, location) {
+                    println("Sound Altered")
+                    
+                    if Defaults["sound"].string == nil || Defaults["sound"].string == "on" {
+                        
+                        println("ON FIRED")
+                        soundButton.removeFromParent()
+                        
+                        soundButton = SKSpriteNode(imageNamed: "soundOff")
+                        soundButton.position = CGPoint(x: CGRectGetMidX(frame)-140, y: CGRectGetMaxY(frame) - 20)
+                        soundButton.size = CGSize(width: 44*0.6, height: 44*0.6)
+                        
+                        soundButton.zPosition = 60
+                        addChild(soundButton)
+                        
+                        Defaults["sound"] = "off"
+                        
+                    }else{
+                        
+                        println("OFF FIRED")
+                        soundButton.removeFromParent()
+                        
+                        soundButton = SKSpriteNode(imageNamed: "soundOn")
+                        soundButton.position = CGPoint(x: CGRectGetMidX(frame)-140, y: CGRectGetMaxY(frame) - 20)
+                        soundButton.size = CGSize(width: 44*0.6, height: 44*0.6)
+                        
+                        soundButton.zPosition = 60
+                        addChild(soundButton)
+                        Defaults["sound"] = "on"
+                        
+                    }
+                    
+                    
+                    
+                }
         
         switch zoneOfCenterPlayer() {
             
@@ -539,6 +608,23 @@ class MenuScene: SKScene, EasyGameCenterDelegate, GKGameCenterControllerDelegate
     // 4
     func removeAds() {
         println("ads removed")
+        Defaults["premium"] = "true"
+        
+        removeAdsButton.hidden = true
+        leftPlayer?.removeFromParent()
+        rightPlayer?.removeFromParent()
+        centerPlayer?.removeFromParent()
+        
+        
+        createPlayers()
+//        centerPlayer = players[players.count/2]
+//        setLeftAndRightPlayers()
+        
+        
+        placePlayersOnPositions()
+        calculateZIndexesForPlayers()
+        
+
     }
     
     // 5
@@ -616,16 +702,16 @@ class MenuScene: SKScene, EasyGameCenterDelegate, GKGameCenterControllerDelegate
             case .Purchased:
                 println("buy, ok unlock iap here")
                 println(p.productIdentifier)
-                Defaults["premium"] = "true"
-                //TRANSITION SCENE AFTER PURCHASE
-                let scene = GameScene(size: self.scene!.size)
-                scene.scaleMode = SKSceneScaleMode.AspectFill
-                self.scene!.view!.presentScene(scene)
-                //===============================
+//                Defaults["premium"] = "true"
+//                //TRANSITION SCENE AFTER PURCHASE
+//                let scene = GameScene(size: self.scene!.size)
+//                scene.scaleMode = SKSceneScaleMode.AspectFill
+//                self.scene!.view!.presentScene(scene)
+//                //===============================
                 
                 let prodID = p.productIdentifier as String
                 switch prodID {
-                case "bundle id":
+                case "removeAds":
                     println("remove ads")
                     removeAds()
                 case "bundle id":
@@ -639,6 +725,7 @@ class MenuScene: SKScene, EasyGameCenterDelegate, GKGameCenterControllerDelegate
                 break;
             case .Failed:
                 println("buy error")
+                removeAdsButton.hidden = false
                 queue.finishTransaction(trans)
                 break;
             default:
@@ -653,6 +740,15 @@ class MenuScene: SKScene, EasyGameCenterDelegate, GKGameCenterControllerDelegate
     func finishTransaction(trans:SKPaymentTransaction)
     {
         println("finish trans")
+        //TRANSITION SCENE AFTER PURCHASE
+//        dispatch_async(dispatch_get_main_queue()) {
+//            // update some UI
+//        
+//        let scene = GameScene(size: self.scene!.size)
+//        scene.scaleMode = SKSceneScaleMode.AspectFill
+//        self.scene!.view!.presentScene(scene)
+//        }
+//        //===============================
     }
     
     //7

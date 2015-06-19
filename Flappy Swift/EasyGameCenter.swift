@@ -294,135 +294,135 @@ class EasyGameCenter: NSObject, GKGameCenterControllerDelegate, GKMatchmakerView
     
     */
     
-    //    private func cachingAchievements() {
-    //
-    //        if !self.inCacheIsLoading {
-    //
-    //            self.inCacheIsLoading = true
-    //
-    //            let priority = DISPATCH_QUEUE_PRIORITY_DEFAULT
-    //
-    //            dispatch_async(dispatch_get_global_queue(priority, 0)) {
-    //
-    //                if  EasyGameCenter.isConnectedToNetwork() &&
-    //
-    //                    EasyGameCenter.isPlayerIdentifiedToGameCenter() {
-    //
-    //
-    //
-    //                        /* For the local player from Game Center */
-    //
-    //                        GKAchievement.loadAchievementsWithCompletionHandler({
-    //
-    //                            (var allAchievements:[AnyObject]!, error:NSError!) -> Void in
-    //
-    //                            if error != nil {
-    //
-    //                                self.checkupNetAndPlayer()
-    //
-    //                                EasyGameCenter.debug("\n[Easy Game Center] Couldn't load achievements, error: \(error)\n")
-    //
-    //                            }
-    //
-    //                            /* Load Achievement with value pourcent */
-    //
-    //                            for anAchievement in allAchievements  {
-    //
-    //                                if let oneAchievement = anAchievement as? GKAchievement {
-    //
-    //                                    self.achievementsCache[oneAchievement.identifier] = oneAchievement
-    //
-    //                                }
-    //
-    //                            }
-    //
-    //
-    //
-    //                            /* Get Description cache */
-    //
-    //                            GKAchievementDescription.loadAchievementDescriptionsWithCompletionHandler {
-    //
-    //                                (var achievementsDescription:[AnyObject]!, error:NSError!) -> Void in
-    //
-    //
-    //
-    //                                if error != nil {
-    //
-    //                                    self.checkupNetAndPlayer()
-    //
-    //                                    EasyGameCenter.debug("\n[Easy Game Center] Couldn't load achievementInformation, error: \(error)\n")
-    //
-    //                                }
-    //
-    //
-    //
-    //                                if let achievementsIsArrayGKAchievementDescription = achievementsDescription as? [GKAchievementDescription] {
-    //
-    //                                    for gkAchievementDes in achievementsIsArrayGKAchievementDescription {
-    //
-    //
-    //
-    //                                        /* Not reset Achievements with value pourcent */
-    //
-    //                                        if self.achievementsCache[gkAchievementDes.identifier] == nil {
-    //
-    //
-    //
-    //                                            /* get by GKAchievement for fixe bug boucle */
-    //
-    //                                            if let gkAchievement = GKAchievement(identifier: gkAchievementDes.identifier) {
-    //
-    //                                                self.achievementsCache[gkAchievement.identifier] = gkAchievement
-    //
-    //                                            }
-    //
-    //                                        }
-    //
-    //                                        self.achievementsDescriptionCache[gkAchievementDes.identifier] = gkAchievementDes
-    //
-    //                                    }
-    //
-    //                                    if  self.achievementsCache.count > 0 &&
-    //
-    //                                        self.achievementsDescriptionCache.count > 0 &&
-    //
-    //                                        self.achievementsCache.count == self.achievementsDescriptionCache.count {
-    //
-    //                                            EasyGameCenter.delegate!.easyGameCenterInCache?()
-    //
-    //                                    } else {
-    //
-    //                                        self.checkupNetAndPlayer()
-    //
-    //                                    }
-    //
-    //                                } else {
-    //
-    //                                    self.checkupNetAndPlayer()
-    //
-    //
-    //
-    //                                }
-    //
-    //                                self.inCacheIsLoading = false
-    //
-    //                            }
-    //
-    //                        })
-    //
-    //                } else {
-    //
-    //                    self.inCacheIsLoading = false
-    //
-    //                    self.checkupNetAndPlayer()
-    //
-    //                }
-    //
-    //            }
-    //
-    //        }
-    //
-    //    }
+        private func cachingAchievements() {
+    
+            if !self.inCacheIsLoading {
+    
+                self.inCacheIsLoading = true
+    
+                let priority = DISPATCH_QUEUE_PRIORITY_DEFAULT
+    
+                dispatch_async(dispatch_get_global_queue(priority, 0)) {
+    
+                    if  EasyGameCenter.isConnectedToNetwork() &&
+    
+                        EasyGameCenter.isPlayerIdentifiedToGameCenter() {
+    
+    
+    
+                            /* For the local player from Game Center */
+    
+                            GKAchievement.loadAchievementsWithCompletionHandler({
+    
+                                (var allAchievements:[AnyObject]!, error:NSError!) -> Void in
+    
+                                if error != nil {
+    
+                                    self.checkupNetAndPlayer()
+    
+                                    EasyGameCenter.debug("\n[Easy Game Center] Couldn't load achievements, error: \(error)\n")
+    
+                                }
+    
+                                /* Load Achievement with value pourcent */
+    
+                                for anAchievement in allAchievements  {
+    
+                                    if let oneAchievement = anAchievement as? GKAchievement {
+    
+                                        self.achievementsCache[oneAchievement.identifier] = oneAchievement
+    
+                                    }
+    
+                                }
+    
+    
+    
+                                /* Get Description cache */
+    
+                                GKAchievementDescription.loadAchievementDescriptionsWithCompletionHandler {
+    
+                                    (var achievementsDescription:[AnyObject]!, error:NSError!) -> Void in
+    
+    
+    
+                                    if error != nil {
+    
+                                        self.checkupNetAndPlayer()
+    
+                                        EasyGameCenter.debug("\n[Easy Game Center] Couldn't load achievementInformation, error: \(error)\n")
+    
+                                    }
+    
+    
+    
+                                    if let achievementsIsArrayGKAchievementDescription = achievementsDescription as? [GKAchievementDescription] {
+    
+                                        for gkAchievementDes in achievementsIsArrayGKAchievementDescription {
+    
+    
+    
+                                            /* Not reset Achievements with value pourcent */
+    
+                                            if self.achievementsCache[gkAchievementDes.identifier] == nil {
+    
+    
+    
+                                                /* get by GKAchievement for fixe bug boucle */
+    
+                                                if let gkAchievement = GKAchievement(identifier: gkAchievementDes.identifier) {
+    
+                                                    self.achievementsCache[gkAchievement.identifier] = gkAchievement
+    
+                                                }
+    
+                                            }
+    
+                                            self.achievementsDescriptionCache[gkAchievementDes.identifier] = gkAchievementDes
+    
+                                        }
+    
+                                        if  self.achievementsCache.count > 0 &&
+    
+                                            self.achievementsDescriptionCache.count > 0 &&
+    
+                                            self.achievementsCache.count == self.achievementsDescriptionCache.count {
+    
+                                                EasyGameCenter.delegate!.easyGameCenterInCache?()
+    
+                                        } else {
+    
+                                            self.checkupNetAndPlayer()
+    
+                                        }
+    
+                                    } else {
+    
+                                        self.checkupNetAndPlayer()
+    
+    
+    
+                                    }
+    
+                                    self.inCacheIsLoading = false
+    
+                                }
+    
+                            })
+    
+                    } else {
+    
+                        self.inCacheIsLoading = false
+    
+                        self.checkupNetAndPlayer()
+    
+                    }
+    
+                }
+    
+            }
+    
+        }
     
     /**
     
@@ -480,7 +480,7 @@ class EasyGameCenter: NSObject, GKGameCenterControllerDelegate, GKMatchmakerView
                             
                             dispatch_async(dispatch_get_main_queue()) {
                                 
-                                // instanceEGC!.cachingAchievements()
+                                 instanceEGC!.cachingAchievements()
                                 
                             }
                             
@@ -532,7 +532,7 @@ class EasyGameCenter: NSObject, GKGameCenterControllerDelegate, GKMatchmakerView
                                         
                                         dispatch_async(dispatch_get_main_queue()) {
                                             
-                                            //   instanceEGC!.cachingAchievements()
+                                               instanceEGC!.cachingAchievements()
                                             
                                         }
                                         

@@ -90,7 +90,7 @@ class TopBirdScene: SKScene, SKPhysicsContactDelegate {
     
     func showAchievement() {
         
-        EasyGameCenter.reportAchievement(progress: 100.00, achievementIdentifier: "70001229")
+        EasyGameCenter.reportAchievement(progress: 100.00, achievementIdentifier: "gettopbird")
         //Now Show Back Button and Share Button
         
         
