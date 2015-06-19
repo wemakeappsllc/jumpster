@@ -46,6 +46,10 @@ class TopBirdScene: SKScene, SKPhysicsContactDelegate {
     //GUY NODE
     var manGuy: SKSpriteNode!
     var topBird: SKSpriteNode!
+    
+    var shareButton: SKSpriteNode!
+    var homeButton: SKSpriteNode!
+    
     var playSoundEffect : SKAction!
     var playWinMusic : SKAction!
     
@@ -86,14 +90,15 @@ class TopBirdScene: SKScene, SKPhysicsContactDelegate {
         var gotTimer = NSTimer.scheduledTimerWithTimeInterval(4.5, target: self, selector: Selector("Got"), userInfo: nil, repeats: false)
         var birdTimer = NSTimer.scheduledTimerWithTimeInterval(5.5, target: self, selector: Selector("Bird"), userInfo: nil, repeats: false)
         var showButtonsAndAchievementTimer = NSTimer.scheduledTimerWithTimeInterval(6.5, target: self, selector: Selector("showAchievement"), userInfo: nil, repeats: false)
+//        var showButtonsToShare = NSTimer.scheduledTimerWithTimeInterval(6.9, target: self, selector: Selector("initButtons"), userInfo: nil, repeats: false)
     }
     
     func showAchievement() {
         
         EasyGameCenter.reportAchievement(progress: 100.00, achievementIdentifier: "gettopbird")
         //Now Show Back Button and Share Button
-        
-        
+        displayButtons()
+        //        var showButtonsToShare = NSTimer.scheduledTimerWithTimeInterval(0.9, target: self, selector: Selector("initShareButtons"), userInfo: nil, repeats: false)
         
     }
     
@@ -196,6 +201,41 @@ class TopBirdScene: SKScene, SKPhysicsContactDelegate {
         
     }
     
+    func displayButtons() {
+        
+        println("Buttons About to be placed")
+        shareButton = SKSpriteNode(imageNamed: "Share")
+        shareButton.position = CGPoint(x: CGRectGetMidX(frame)-54, y: CGRectGetMaxY(frame) - 460)
+        shareButton.size = CGSize(width: 249*0.35, height: 90*0.35)
+        
+        
+        shareButton.zPosition = 601
+        addChild(shareButton)
+//        shareButton.hidden = true
+        println("Share added")
+        
+        homeButton = SKSpriteNode(imageNamed: "Home")
+        homeButton.position = CGPoint(x: CGRectGetMidX(frame)+54, y: CGRectGetMaxY(frame) - 460)
+        homeButton.size = CGSize(width: 249*0.35, height: 90*0.35)
+        
+        
+        homeButton.zPosition = 601
+        addChild(homeButton)
+//        homeButton.hidden = true
+        println("home added")
+        
+    }
+    
+    func initShareButtons() {
+        
+        shareButton.hidden = false
+        homeButton.hidden = false
+        
+        println("Buttons About to be placed")
+
+        
+    }
+    
     func initTopBird() {
         
         topBird = SKSpriteNode(imageNamed: "brightgreen1")
@@ -255,12 +295,40 @@ class TopBirdScene: SKScene, SKPhysicsContactDelegate {
         
     }
     
+    override func touchesBegan(touches: Set<NSObject>, withEvent event: UIEvent) {
+        
+        for touch: AnyObject in touches {
+            //        let touch = touches.AnyObject() as! UITouch
+            let node = self.nodeAtPoint(touch.locationInNode(self))
+            let location = touch.locationInNode(self)
+            
+            if self.homeButton != nil && self.shareButton != nil {
+            
+            if CGRectContainsPoint(self.homeButton.frame, location) {
+                
+                println("pressed Home")
+                
+                let scene = GameScene(size: self.scene!.size)
+                scene.scaleMode = SKSceneScaleMode.AspectFill
+                
+                self.scene!.view!.presentScene(scene)
+                
+            }
+            if CGRectContainsPoint(self.shareButton.frame, location) {
+                
+                println("pressed Share")
+                NSNotificationCenter.defaultCenter().postNotificationName("SharePress", object: nil)
+            }
+            }
+        }
     }
-//    
+    
+    }
+//
 //    func createPlayers() {
-//        
+//
 //        let characters = ["baby1","greenguy1","man1"]
-//        
+//
 //        for i in 0..<3 {
 //            
 //            var names = ["King","Baby","Bird Lover"]

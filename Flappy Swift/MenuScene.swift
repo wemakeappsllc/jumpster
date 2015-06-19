@@ -610,20 +610,26 @@ class MenuScene: SKScene, EasyGameCenterDelegate, GKGameCenterControllerDelegate
         println("ads removed")
         Defaults["premium"] = "true"
         
-        removeAdsButton.hidden = true
-        leftPlayer?.removeFromParent()
-        rightPlayer?.removeFromParent()
-        centerPlayer?.removeFromParent()
+        let scene = ThankYouScene(size: self.scene!.size)
+        scene.scaleMode = SKSceneScaleMode.AspectFill
         
+        //                self.scene!.view!.presentScene(scene, transition: transition)
+        self.scene!.view!.presentScene(scene)
         
-        createPlayers()
-//        centerPlayer = players[players.count/2]
-//        setLeftAndRightPlayers()
-        
-        
-        placePlayersOnPositions()
-        calculateZIndexesForPlayers()
-        
+//        removeAdsButton.hidden = true
+//        leftPlayer?.removeFromParent()
+//        rightPlayer?.removeFromParent()
+//        centerPlayer?.removeFromParent()
+//        
+//        
+//        createPlayers()
+////        centerPlayer = players[players.count/2]
+////        setLeftAndRightPlayers()
+//        
+//        
+//        placePlayersOnPositions()
+//        calculateZIndexesForPlayers()
+//        
 
     }
     

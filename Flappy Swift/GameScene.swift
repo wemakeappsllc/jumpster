@@ -162,6 +162,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate, ADBannerViewDelegate, EasyGa
   override func didMoveToView(view: SKView) {
     
     
+    //CLEAR ALL DEFAULTS CODE -{[-{[-{[-{[-{[-{[00000000000000
+//    for key in NSUserDefaults.standardUserDefaults().dictionaryRepresentation().keys {
+//        NSUserDefaults.standardUserDefaults().removeObjectForKey(key.description)
+//    }
+    //-------------------------{[-{[-{[-{[-{[-{[00000000000000
     //test for retesting iaps
 //    Defaults.removeObjectForKey("premium")
     

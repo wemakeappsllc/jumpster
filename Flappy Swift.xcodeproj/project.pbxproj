@@ -42,6 +42,7 @@
 		E9C288251B2953DC003AD446 /* SwiftyUserDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9C288241B2953DC003AD446 /* SwiftyUserDefaults.swift */; };
 		E9C7C6A01B27763400F380DC /* background@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = E9C7C69F1B27763400F380DC /* background@2x.png */; };
 		E9F94D881B3390C40093F4CB /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E9F94D871B3390C40093F4CB /* StoreKit.framework */; };
+		E9F94D8A1B34BC8E0093F4CB /* ThankYouScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9F94D891B34BC8E0093F4CB /* ThankYouScene.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -94,6 +95,7 @@
 		E9C288241B2953DC003AD446 /* SwiftyUserDefaults.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftyUserDefaults.swift; sourceTree = "<group>"; };
 		E9C7C69F1B27763400F380DC /* background@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "background@2x.png"; sourceTree = "<group>"; };
 		E9F94D871B3390C40093F4CB /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
+		E9F94D891B34BC8E0093F4CB /* ThankYouScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ThankYouScene.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -148,6 +150,7 @@
 				E9C288241B2953DC003AD446 /* SwiftyUserDefaults.swift */,
 				E935F46D1B2B49EA004F9924 /* MenuScene.swift */,
 				E935F46F1B2D2DA9004F9924 /* TopBirdScene.swift */,
+				E9F94D891B34BC8E0093F4CB /* ThankYouScene.swift */,
 				E99E88AD1B2DFBB40064EE51 /* EasyGameCenter.swift */,
 				4EC69CE119726D340094A23E /* GameScene.swift */,
 				4EC69CE319726D340094A23E /* GameViewController.swift */,
@@ -344,6 +347,7 @@
 				4EC69CE419726D340094A23E /* GameViewController.swift in Sources */,
 				4EC69CDE19726D340094A23E /* AppDelegate.swift in Sources */,
 				E99E88AE1B2DFBB40064EE51 /* EasyGameCenter.swift in Sources */,
+				E9F94D8A1B34BC8E0093F4CB /* ThankYouScene.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

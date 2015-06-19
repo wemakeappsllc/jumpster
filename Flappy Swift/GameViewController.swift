@@ -41,6 +41,10 @@ class GameViewController: UIViewController, EasyGameCenterDelegate, GKGameCenter
   override func viewDidLoad() {
     super.viewDidLoad()
     
+    //OBSERVE FOR SHARE ==================================================================
+       NSNotificationCenter.defaultCenter().addObserver(self, selector: "shareSheet:", name: "SharePress", object: nil)
+    //=====================================================================================
+    
     /*** Set Delegate UIViewController ***/
     EasyGameCenter.sharedInstance(self)
     
@@ -65,6 +69,18 @@ class GameViewController: UIViewController, EasyGameCenterDelegate, GKGameCenter
       skView.presentScene(scene)
     }
   }
+    
+    func shareSheet(notification : NSNotification) {
+        
+        var textToShare = "I Got Top Bird! Bet you can't :) "
+        var myWebsite = "https://itunes.apple.com/us/app/king-top-bird/id1006423676?ls=1&mt=8"
+        let objectsToShare = [textToShare, myWebsite]
+        let activityVC = UIActivityViewController(activityItems: objectsToShare, applicationActivities: nil)
+        
+        self.presentViewController(activityVC, animated: true, completion: nil)
+        
+        
+    }
 
   override func shouldAutorotate() -> Bool {
     return true
