@@ -210,6 +210,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate, ADBannerViewDelegate, EasyGa
         name: UIApplicationDidBecomeActiveNotification,
         object: nil)
     
+    NSNotificationCenter.defaultCenter().addObserver(
+        self,
+        selector: "resignActive:",
+        name: UIApplicationWillResignActiveNotification,
+        object: nil)
+    
     
 //    playSoundEffect = SKAction.playSoundFileNamed("SFX_Powerup_49.wav", waitForCompletion: false)
 //    playHighScoreEffect = SKAction.playSoundFileNamed("SFX_Powerup_34.wav", waitForCompletion: true)
@@ -677,10 +683,31 @@ class GameScene: SKScene, SKPhysicsContactDelegate, ADBannerViewDelegate, EasyGa
         
         println("BECAME ACTIVE")
 
-//            if self.bird.position.y != CGFloat(72.0) {
-//                println("GOTCHA AIR")
-//                inAir = "true"
-//            }
+        if inAir == "true" {
+            
+            
+            
+        }else {
+            inAir = "true"
+            bird.runAction(SKAction.rotateByAngle(CGFloat(-M_PI*2), duration: 0.5))
+//            bird.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 14))
+            var timer = NSTimer.scheduledTimerWithTimeInterval(1.0, target: self, selector: Selector("notInAir"), userInfo: nil, repeats: false)
+            
+        }
+        self.view?.paused = false
+        
+        
+    }
+    
+    func resignActive(notification : NSNotification){
+        
+        println("RESIGNED ACTIVE")
+        
+        self.view?.paused = true
+        //            if self.bird.position.y != CGFloat(72.0) {
+        //                println("GOTCHA AIR")
+        //                inAir = "true"
+        //            }
         
         
         
@@ -1293,39 +1320,39 @@ class GameScene: SKScene, SKPhysicsContactDelegate, ADBannerViewDelegate, EasyGa
         // 2
     else if state == .FSGameStatePlaying {
         
-        if jumpcount < 2 {
-            
-            bird.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 14))
-            bird.runAction(SKAction.rotateByAngle(CGFloat(-M_PI*2), duration: 0.5))
-            jumpcount!++
-        }
-//        for touch: AnyObject in touches {
-//            let location = touch.locationInNode(self)
-//        
-//            if CGRectContainsPoint(removeAdsButton.frame, location) || CGRectContainsPoint(optionButton.frame, location)  {
-//                
-//                
-//                println("remove ads pressed")
-////                btnRemoveAds()
-//                
-//                
-//                
-//                
-//            }else{
-//
-//        if inAir == "true" {
+//        if jumpcount < 2 {
 //            
-//            
-//            
-//        }else {
-//            inAir = "true"
-//           bird.runAction(SKAction.rotateByAngle(CGFloat(-M_PI*2), duration: 0.5))
-//        bird.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 14))
-//        var timer = NSTimer.scheduledTimerWithTimeInterval(1.0, target: self, selector: Selector("notInAir"), userInfo: nil, repeats: false)
-//
+//            bird.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 14))
+//            bird.runAction(SKAction.rotateByAngle(CGFloat(-M_PI*2), duration: 0.5))
+//            jumpcount!++
 //        }
-//            }
-//    }//End For
+        for touch: AnyObject in touches {
+            let location = touch.locationInNode(self)
+        
+            if CGRectContainsPoint(removeAdsButton.frame, location) || CGRectContainsPoint(optionButton.frame, location)  {
+                
+                
+                println("remove ads pressed")
+//                btnRemoveAds()
+                
+                
+                
+                
+            }else{
+
+        if inAir == "true" {
+            
+            
+            
+        }else {
+            inAir = "true"
+           bird.runAction(SKAction.rotateByAngle(CGFloat(-M_PI*2), duration: 0.5))
+        bird.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 14))
+        var timer = NSTimer.scheduledTimerWithTimeInterval(1.0, target: self, selector: Selector("notInAir"), userInfo: nil, repeats: false)
+
+        }
+            }
+    }//End For
         
     }//end state iff state
     

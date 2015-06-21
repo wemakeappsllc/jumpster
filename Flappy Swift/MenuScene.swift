@@ -40,6 +40,7 @@ class MenuScene: SKScene, EasyGameCenterDelegate, GKGameCenterControllerDelegate
     var background: SKNode!
     let background_speed = 100.0
     var label_score : SKLabelNode!
+    var restorePurchaseLabel : SKLabelNode!
     var exitButton: SKSpriteNode!
     var removeAdsButton: SKSpriteNode!
     var soundButton: SKSpriteNode!
@@ -92,6 +93,7 @@ class MenuScene: SKScene, EasyGameCenterDelegate, GKGameCenterControllerDelegate
         initBackground()
         initLeaderBoardButton()
         initExitButton()
+//        initRestorePurchaseButton()
         
         initSoundButton()
         
@@ -99,6 +101,7 @@ class MenuScene: SKScene, EasyGameCenterDelegate, GKGameCenterControllerDelegate
             
         }else{
         initRemoveAdsButton()
+        initRestorePurchaseButton()
         }
     }
     
@@ -187,6 +190,20 @@ class MenuScene: SKScene, EasyGameCenterDelegate, GKGameCenterControllerDelegate
         
         exitButton.zPosition = 60
         addChild(exitButton)
+        
+        
+    }
+    
+    func initRestorePurchaseButton() {
+        
+        restorePurchaseLabel = SKLabelNode(fontNamed:"MarkerFelt-Wide")
+        restorePurchaseLabel.position = CGPoint(x: CGRectGetMidX(frame)+90, y: CGRectGetMaxY(frame) - 500)
+        restorePurchaseLabel.text = "Restore Purchase"
+        restorePurchaseLabel.zPosition = 801
+        restorePurchaseLabel.fontColor = UIColor.grayColor()
+        restorePurchaseLabel.name = "restorePurchase"
+        restorePurchaseLabel.fontSize = 40/3
+        addChild(restorePurchaseLabel)
         
         
     }
@@ -418,6 +435,13 @@ class MenuScene: SKScene, EasyGameCenterDelegate, GKGameCenterControllerDelegate
             gc.gameCenterDelegate = self
             vc?.presentViewController(gc, animated: true, completion: nil)
             
+            }
+            
+        if CGRectContainsPoint(self.restorePurchaseLabel!.frame, location) {
+                
+                println("RESTORE PRESSED")
+                RestorePurchases()
+                
             }
             
         if CGRectContainsPoint(self.centerPlayer!.frame, location) {
