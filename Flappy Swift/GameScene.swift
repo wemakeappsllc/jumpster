@@ -689,7 +689,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, ADBannerViewDelegate, EasyGa
             
         }else {
             inAir = "true"
-            bird.runAction(SKAction.rotateByAngle(CGFloat(-M_PI*2), duration: 0.5))
+//            bird.runAction(SKAction.rotateByAngle(CGFloat(-M_PI*2), duration: 0.5))
 //            bird.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 14))
             var timer = NSTimer.scheduledTimerWithTimeInterval(1.0, target: self, selector: Selector("notInAir"), userInfo: nil, repeats: false)
             
