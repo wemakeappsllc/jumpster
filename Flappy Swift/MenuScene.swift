@@ -436,12 +436,14 @@ class MenuScene: SKScene, EasyGameCenterDelegate, GKGameCenterControllerDelegate
             vc?.presentViewController(gc, animated: true, completion: nil)
             
             }
+            if self.restorePurchaseLabel != nil {
             
         if CGRectContainsPoint(self.restorePurchaseLabel!.frame, location) {
                 
                 println("RESTORE PRESSED")
                 RestorePurchases()
                 
+            }
             }
             
         if CGRectContainsPoint(self.centerPlayer!.frame, location) {
@@ -634,11 +636,9 @@ class MenuScene: SKScene, EasyGameCenterDelegate, GKGameCenterControllerDelegate
         println("ads removed")
         Defaults["premium"] = "true"
         
-        let scene = ThankYouScene(size: self.scene!.size)
-        scene.scaleMode = SKSceneScaleMode.AspectFill
-        
-        //                self.scene!.view!.presentScene(scene, transition: transition)
-        self.scene!.view!.presentScene(scene)
+//                let scene = ThankYouScene(size: self.scene!.size)
+//                scene.scaleMode = SKSceneScaleMode.AspectFill
+                self.scene!.view!.presentScene(ThankYouScene(size: self.scene!.size))
         
 //        removeAdsButton.hidden = true
 //        leftPlayer?.removeFromParent()

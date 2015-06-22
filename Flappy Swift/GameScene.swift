@@ -163,9 +163,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate, ADBannerViewDelegate, EasyGa
     
     
     //CLEAR ALL DEFAULTS CODE -{[-{[-{[-{[-{[-{[00000000000000
-//    for key in NSUserDefaults.standardUserDefaults().dictionaryRepresentation().keys {
-//        NSUserDefaults.standardUserDefaults().removeObjectForKey(key.description)
-//    }
+    for key in NSUserDefaults.standardUserDefaults().dictionaryRepresentation().keys {
+        NSUserDefaults.standardUserDefaults().removeObjectForKey(key.description)
+    }
     //-------------------------{[-{[-{[-{[-{[-{[00000000000000
     //test for retesting iaps
 //    Defaults.removeObjectForKey("premium")
@@ -420,6 +420,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate, ADBannerViewDelegate, EasyGa
 //    runAction(SKAction.repeatActionForever(SKAction.sequence([SKAction.waitForDuration(2.0), SKAction.runBlock { self.initPipes()}])))
     
   }
+    
+    
     func rainbowCircus() {
         
         self.runAction(playHighScoreEffect)
@@ -1378,9 +1380,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate, ADBannerViewDelegate, EasyGa
                 println("Touched Option")
                 
                 if audioPlayer != nil {
-                audioPlayer.stop()
+                    audioPlayer.stop()
+                    audioPlayer = nil
                 }
 //                optionView.hidden = false
+                
+
                 let transition = SKTransition.revealWithDirection(SKTransitionDirection.Down, duration: 0.5)
                 
                 let scene = MenuScene(size: self.scene!.size)
