@@ -399,8 +399,8 @@ class MenuScene: SKScene, EasyGameCenterDelegate, GKGameCenterControllerDelegate
                 println("Remove Ads Pressed")
                 
                 
-
-                removeAdsButton.hidden = true
+                self.view?.userInteractionEnabled = false
+//                removeAdsButton.hidden = true
                 btnRemoveAds()
                 
 
@@ -469,7 +469,7 @@ class MenuScene: SKScene, EasyGameCenterDelegate, GKGameCenterControllerDelegate
                 println(self.centerPlayer!.name)
                 
             }
-            
+            }
 //            if self.centerPlayer!.name != "hiddenBaby" || self.centerPlayer!.name != "hiddenGreen" {
 //                
 //                println(self.centerPlayer!.name)
@@ -482,7 +482,7 @@ class MenuScene: SKScene, EasyGameCenterDelegate, GKGameCenterControllerDelegate
 //            //            self.scene!.view!.presentScene(scene, transition: transition)
 //            self.scene!.view!.presentScene(scene)
             
-            }
+//            }
         
         if node == centerPlayer {
             let fadeOut = SKAction.fadeAlphaTo(0.5, duration: 0.15)
@@ -530,7 +530,7 @@ class MenuScene: SKScene, EasyGameCenterDelegate, GKGameCenterControllerDelegate
             
             let location = touch.locationInNode(self)
             
-            
+
 
                 
                 if CGRectContainsPoint(soundButton.frame, location) {
@@ -635,10 +635,22 @@ class MenuScene: SKScene, EasyGameCenterDelegate, GKGameCenterControllerDelegate
     func removeAds() {
         println("ads removed")
         Defaults["premium"] = "true"
+        NSNotificationCenter.defaultCenter().postNotificationName("RemoveAds", object: nil)
+        
+        if removeAdsButton != nil {
+            
+            removeAdsButton.hidden = true
+            removeAdsButton = nil
+        }
+        if restorePurchaseLabel != nil {
+            
+            restorePurchaseLabel.hidden = true
+            restorePurchaseLabel = nil
+        }
         
 //                let scene = ThankYouScene(size: self.scene!.size)
 //                scene.scaleMode = SKSceneScaleMode.AspectFill
-                self.scene!.view!.presentScene(ThankYouScene(size: self.scene!.size))
+//                self.scene!.view!.presentScene(ThankYouScene(size: self.scene!.size))
         
 //        removeAdsButton.hidden = true
 //        leftPlayer?.removeFromParent()
@@ -731,6 +743,7 @@ class MenuScene: SKScene, EasyGameCenterDelegate, GKGameCenterControllerDelegate
                 
             case .Purchased:
                 println("buy, ok unlock iap here")
+                self.view?.userInteractionEnabled = true
                 println(p.productIdentifier)
 //                Defaults["premium"] = "true"
 //                //TRANSITION SCENE AFTER PURCHASE
@@ -755,7 +768,8 @@ class MenuScene: SKScene, EasyGameCenterDelegate, GKGameCenterControllerDelegate
                 break;
             case .Failed:
                 println("buy error")
-                removeAdsButton.hidden = false
+                self.view?.userInteractionEnabled = true
+//                removeAdsButton.hidden = false
                 queue.finishTransaction(trans)
                 break;
             default:

@@ -70,6 +70,12 @@ extension CGFloat {
 
 class GameScene: SKScene, SKPhysicsContactDelegate, ADBannerViewDelegate, EasyGameCenterDelegate, ADInterstitialAdDelegate, SKPaymentTransactionObserver, SKProductsRequestDelegate  {
     
+    var request: SKProductsRequest?
+    
+    deinit {
+        self.request?.delegate = nil
+        self.request = nil
+    }
     
     //SOUNDS
     
@@ -163,9 +169,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate, ADBannerViewDelegate, EasyGa
     
     
     //CLEAR ALL DEFAULTS CODE -{[-{[-{[-{[-{[-{[00000000000000
-    for key in NSUserDefaults.standardUserDefaults().dictionaryRepresentation().keys {
-        NSUserDefaults.standardUserDefaults().removeObjectForKey(key.description)
-    }
+//    for key in NSUserDefaults.standardUserDefaults().dictionaryRepresentation().keys {
+//        NSUserDefaults.standardUserDefaults().removeObjectForKey(key.description)
+//    }
     //-------------------------{[-{[-{[-{[-{[-{[00000000000000
     //test for retesting iaps
 //    Defaults.removeObjectForKey("premium")
@@ -187,9 +193,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate, ADBannerViewDelegate, EasyGa
     if(SKPaymentQueue.canMakePayments()) {
         println("IAP is enabled, loading")
         var productID:NSSet = NSSet(objects: "removeAds", "bundle id")
-        var request: SKProductsRequest = SKProductsRequest(productIdentifiers: productID as Set<NSObject>)
-        request.delegate = self
-        request.start()
+        request = SKProductsRequest(productIdentifiers: productID as Set<NSObject>)
+        request!.delegate = self
+        request!.start()
     } else {
         println("please enable IAPS")
     }
@@ -295,7 +301,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, ADBannerViewDelegate, EasyGa
         
     } else {
         
-        loadAds()
+//        loadAds()
         
         if Defaults["fireInterstitial"].string == "true" {
             
@@ -1334,7 +1340,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate, ADBannerViewDelegate, EasyGa
             if CGRectContainsPoint(removeAdsButton.frame, location) || CGRectContainsPoint(optionButton.frame, location)  {
                 
                 
-                println("remove ads pressed")
+                
+                println("remove ads pressed first")
 //                btnRemoveAds()
                 
                 
@@ -1367,7 +1374,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, ADBannerViewDelegate, EasyGa
             if CGRectContainsPoint(removeAdsButton.frame, location) {
                 
 //                bird.physicsBody?.applyImpulse(CGVector(dx: 0, dy: -14))
-
+                self.view?.userInteractionEnabled = false
                 println("remove ads pressed")
                 btnRemoveAds()
                 
@@ -2372,7 +2379,21 @@ class GameScene: SKScene, SKPhysicsContactDelegate, ADBannerViewDelegate, EasyGa
         println("buy " + p.productIdentifier)
         var pay = SKPayment(product: p)
         SKPaymentQueue.defaultQueue().addTransactionObserver(self)
+        
+        if pay != nil && request != nil {
         SKPaymentQueue.defaultQueue().addPayment(pay as SKPayment)
+        }else{
+            
+            if(SKPaymentQueue.canMakePayments()) {
+                println("IAP is enabled, loading")
+                var productID:NSSet = NSSet(objects: "removeAds", "bundle id")
+                request = SKProductsRequest(productIdentifiers: productID as Set<NSObject>)
+                request!.delegate = self
+                request!.start()
+            } else {
+                println("please enable IAPS")
+            }
+        }
     }
     
     //3
@@ -2427,9 +2448,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate, ADBannerViewDelegate, EasyGa
                 
             case .Purchased:
                 println("buy, ok unlock iap here")
+                self.view?.userInteractionEnabled = true
                 println(p.productIdentifier)
                 //SET PREMIUM STATUS AND REMOVE ADS+IAP BUTTON
                 Defaults["premium"] = "true"
+                NSNotificationCenter.defaultCenter().postNotificationName("RemoveAds", object: nil)
+
                 if adBannerView != nil {
                     
                     adBannerView?.hidden = true
@@ -2454,6 +2478,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate, ADBannerViewDelegate, EasyGa
                 break;
             case .Failed:
                 println("buy error")
+                self.view?.userInteractionEnabled = true
                 queue.finishTransaction(trans)
                 break;
             default:

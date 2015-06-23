@@ -31,18 +31,26 @@ import SpriteKit
 import GameKit
 import iAd
 
-class GameViewController: UIViewController, EasyGameCenterDelegate, GKGameCenterControllerDelegate,ADInterstitialAdDelegate {
+class GameViewController: UIViewController, EasyGameCenterDelegate, GKGameCenterControllerDelegate,ADInterstitialAdDelegate, ADBannerViewDelegate {
     
   @IBOutlet var skView: SKView!
     var scene:GameScene!
     var interstitialAd:ADInterstitialAd!
     var interstitialAdView: UIView = UIView()
+    // Ad Banner
+    var adBannerView : ADBannerView?
 
   override func viewDidLoad() {
     super.viewDidLoad()
     
+    
+    
     //OBSERVE FOR SHARE ==================================================================
        NSNotificationCenter.defaultCenter().addObserver(self, selector: "shareSheet:", name: "SharePress", object: nil)
+    //=====================================================================================
+    
+    //OBSERVE FOR SHARE ==================================================================
+    NSNotificationCenter.defaultCenter().addObserver(self, selector: "hideAds:", name: "RemoveAds", object: nil)
     //=====================================================================================
     
     /*** Set Delegate UIViewController ***/
@@ -55,6 +63,21 @@ class GameViewController: UIViewController, EasyGameCenterDelegate, GKGameCenter
     EasyGameCenter.debugMode = true
     
     
+    
+    if Defaults["premium"].string != nil {
+        
+        if adBannerView != nil {
+            adBannerView?.hidden = true
+            adBannerView = nil
+        }
+        
+
+        
+    } else {
+        
+            loadAds()
+        
+    }
 
 
 //    skView.showsFPS = true
@@ -69,6 +92,17 @@ class GameViewController: UIViewController, EasyGameCenterDelegate, GKGameCenter
       skView.presentScene(GameScene(size: skView.bounds.size))
     }
   }
+    
+    
+    func hideAds(notification : NSNotification) {
+        
+        if adBannerView != nil {
+            adBannerView?.hidden = true
+            adBannerView = nil
+        }
+        
+    }
+    
     
     func shareSheet(notification : NSNotification) {
         
@@ -148,4 +182,57 @@ class GameViewController: UIViewController, EasyGameCenterDelegate, GKGameCenter
         interstitialAdView.removeFromSuperview()
 
     }
+    //=====================================================================================================
+    // AD STUFF===========================================================================================================================================================================
+    
+    func loadAds(){
+        adBannerView = ADBannerView(frame: CGRect.zeroRect)
+        adBannerView!.center = CGPoint(x: adBannerView!.center.x, y: view!.bounds.size.height - adBannerView!.frame.size.height / 2)
+        adBannerView!.delegate = self
+        adBannerView!.hidden = true
+        view!.addSubview(adBannerView!)
+    }
+    
+    func bannerViewWillLoadAd(banner: ADBannerView!) {
+        
+        
+        println("Banner will load Ad")
+        
+    }
+    
+    func bannerViewDidLoadAd(banner: ADBannerView!) {
+        
+        if adBannerView != nil {
+            
+            adBannerView!.hidden = false
+            self.adBannerView!.alpha = 1.0
+            
+            println("Ad Loaded")
+        }
+        
+    }
+    
+    func bannerViewActionDidFinish(banner: ADBannerView!) {
+        
+        
+        println("Ad Banner Finished")
+        
+    }
+    
+    func bannerViewActionShouldBegin(banner: ADBannerView!, willLeaveApplication willLeave: Bool) -> Bool {
+        
+        
+        
+        println("Ad Banner Begin")
+        return true
+    }
+    
+    func bannerView(banner: ADBannerView!, didFailToReceiveAdWithError error: NSError!) {
+        
+        if adBannerView != nil {
+            
+            adBannerView!.hidden = true
+        }
+    }
+
 }
