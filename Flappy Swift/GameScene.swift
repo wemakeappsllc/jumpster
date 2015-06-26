@@ -165,9 +165,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate, ADBannerViewDelegate, EasyGa
     var state:FSGameState = .FSGameStateStarting
     
   // MARK: - SKScene Initializacion
+    
+    override func willMoveFromView(view: SKView) {
+        SKPaymentQueue.defaultQueue().removeTransactionObserver(self)
+        
+    }
   override func didMoveToView(view: SKView) {
     
     
+//    Defaults["premium"] = "true"
     //CLEAR ALL DEFAULTS CODE -{[-{[-{[-{[-{[-{[00000000000000
 //    for key in NSUserDefaults.standardUserDefaults().dictionaryRepresentation().keys {
 //        NSUserDefaults.standardUserDefaults().removeObjectForKey(key.description)

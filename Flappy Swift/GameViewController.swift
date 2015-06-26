@@ -43,7 +43,7 @@ class GameViewController: UIViewController, EasyGameCenterDelegate, GKGameCenter
   override func viewDidLoad() {
     super.viewDidLoad()
     
-    
+//    Defaults["premium"] = "true"
     
     //OBSERVE FOR SHARE ==================================================================
        NSNotificationCenter.defaultCenter().addObserver(self, selector: "shareSheet:", name: "SharePress", object: nil)

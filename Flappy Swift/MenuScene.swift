@@ -63,6 +63,11 @@ class MenuScene: SKScene, EasyGameCenterDelegate, GKGameCenterControllerDelegate
         super.init(coder: aDecoder)
     }
     
+    override func willMoveFromView(view: SKView) {
+        SKPaymentQueue.defaultQueue().removeTransactionObserver(self)
+        
+    }
+    
     
     override func didMoveToView(view: SKView) {
         
